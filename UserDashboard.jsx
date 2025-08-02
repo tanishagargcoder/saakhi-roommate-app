@@ -33,7 +33,7 @@ const mockChats = {
 };
 
 const notifications = [
-  { id: 1, type: 'info', message: "You've been matched with Priya S.", time: '10 minutes ago' },
+  { id: 1, type: 'info', message: "You've been matched with Tanisha", time: '10 minutes ago' },
   { id: 2, type: 'alert', message: 'Upcoming Roommate Meet on August 5', time: '2 hours ago' },
   { id: 3, type: 'success', message: 'Application survey submitted successfully!', time: 'Yesterday' },
 ];
