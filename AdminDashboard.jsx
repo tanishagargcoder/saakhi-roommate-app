@@ -7,9 +7,9 @@ const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('users');
   
   const users = [
-    { id: 1, name: 'Priya S.', email: 'priya@example.com', status: 'active', verified: true },
-    { id: 2, name: 'Ananya R.', email: 'ananya@example.com', status: 'pending', verified: false },
-    { id: 3, name: 'Meera K.', email: 'meera@example.com', status: 'active', verified: true },
+    { id: 1, name: 'Tanisha', email: 'priya@example.com', status: 'active', verified: true },
+    { id: 2, name: 'Nandini', email: 'ananya@example.com', status: 'pending', verified: false },
+    { id: 3, name: 'Anshika', email: 'meera@example.com', status: 'active', verified: true },
   ];
 
   const stats = [
