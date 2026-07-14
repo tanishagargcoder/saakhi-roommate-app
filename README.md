@@ -1,6 +1,6 @@
-# Sakhi 💜
+# Saakhi — Roommate App 💜
 
-A **women's safety & empowerment platform** built at the **SheBuilds Hackathon 2025**.
+A **roommate-finder app for women** — helping women find safe, compatible roommates. Built at the **SheBuilds Hackathon 2025**.
 
 ## 🏆 Finalist — SheBuilds Hackathon 2025
 
@@ -10,7 +10,7 @@ Finalists at **SheBuilds Hackathon 2025** held at **VLIV Women's Residence**, in
 
 ## ✨ What it does
 
-Sakhi is a web platform created to empower and support women — with user and admin dashboards, a landing experience, and safety-first features.
+Saakhi helps women find safe, verified roommates — with user and admin dashboards, a landing experience, and safety-first matching.
 
 ## 🛠️ Tech stack
 
