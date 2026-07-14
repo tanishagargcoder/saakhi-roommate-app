@@ -15,14 +15,23 @@ Saakhi helps women find safe, verified roommates — with user and admin dashboa
 ## 🛠️ Tech stack
 
 - **Frontend:** React (JSX components — Landing, Hero, Features, Flow, Impact, CTA, Dashboards)
-- **Backend:** Node.js
-- **Styling:** CSS
+- **Backend:** Python + MongoDB
+- **Styling:** Tailwind CSS · Framer Motion
+- **Auth:** Firebase
 
 ## 🚀 Run locally
 
+**Frontend** (Vite + React + Tailwind):
 ```bash
 npm install
-npm start
+npm run dev
+```
+
+**Backend** (Python + MongoDB):
+```bash
+cd backend
+pip install -r requirements.txt
+python run.py
 ```
 
 ---
