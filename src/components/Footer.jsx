@@ -41,6 +41,11 @@ const Footer = () => {
                   About
                 </a>
               </li>
+              <li>
+                <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="text-[#c5cae9] hover:text-white transition-colors">
+                  FAQ
+                </a>
+              </li>
             </ul>
           </div>
 

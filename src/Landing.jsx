@@ -1,9 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, Footer } from './components';
 
+const FAQS = [
+  {
+    q: 'Is Sakhi really women-only?',
+    a: 'Yes. Sakhi is built exclusively for women looking for female roommates, so you can search with confidence and peace of mind.'
+  },
+  {
+    q: 'Is Sakhi free to use?',
+    a: 'Completely free. Creating a profile, getting matched, and chatting with potential roommates costs nothing.'
+  },
+  {
+    q: 'How does matching work?',
+    a: 'You answer three quick lifestyle questions — sleep schedule, cleanliness, and social energy. Sakhi compares your answers with other members and shows you a compatibility score for each one.'
+  },
+  {
+    q: 'Is my personal information safe?',
+    a: 'Your profile is visible only to signed-in Sakhi members, never publicly. Chats are private between you and your match, and we never share your email or details with anyone.'
+  },
+  {
+    q: 'How do I talk to a match?',
+    a: 'Every match card has a Message button — it opens a private real-time chat right inside Sakhi, so you never have to share your phone number until you are ready.'
+  }
+];
+
 const Landing = () => {
   const navigate = useNavigate();
+  const [openFaq, setOpenFaq] = useState(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#283593] via-[#3949ab] to-[#5c6bc0] text-white">
@@ -97,7 +121,19 @@ const Landing = () => {
             </div>
           </div>
         </section>
-        
+
+        {/* Highlights strip */}
+        <section className="py-6 bg-[#283593]/60 border-y border-white/10">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 text-[#e8eaf6] font-medium">
+              <span>👩 100% Women-only</span>
+              <span>💸 Free to use</span>
+              <span>💬 Real-time private chat</span>
+              <span>🔒 Privacy-first profiles</span>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section id="features" className="py-16 bg-[#3949ab]/50 scroll-mt-16">
           <div className="container mx-auto px-4">
@@ -236,6 +272,35 @@ const Landing = () => {
           </div>
         </section>
         
+        {/* FAQ Section */}
+        <section id="faq" className="py-16 scroll-mt-16">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
+              <div className="w-20 h-1 bg-[#c5cae9] mx-auto mt-4"></div>
+            </div>
+
+            <div className="space-y-3">
+              {FAQS.map((faq, index) => (
+                <div key={index} className="sakhi-card overflow-hidden">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                    className="w-full flex items-center justify-between text-left px-5 py-4"
+                  >
+                    <span className="text-white font-medium pr-4">{faq.q}</span>
+                    <span className="text-[#c5cae9] text-xl flex-shrink-0">
+                      {openFaq === index ? '−' : '+'}
+                    </span>
+                  </button>
+                  {openFaq === index && (
+                    <p className="px-5 pb-4 text-[#e8eaf6]">{faq.a}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-16 bg-[#283593]">
           <div className="container mx-auto px-4 text-center">

@@ -83,6 +83,7 @@ const UserDashboard = () => {
   const [prefsDraft, setPrefsDraft] = useState({});
   const [profileForm, setProfileForm] = useState({ name: '', age: '', occupation: '', location: '' });
   const [saving, setSaving] = useState(false);
+  const [cityFilter, setCityFilter] = useState('');
 
   const displayName = profile?.name || user?.displayName || user?.email?.split('@')[0] || 'there';
 
@@ -138,6 +139,10 @@ const UserDashboard = () => {
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (selectedChatId && messages.length) {
+      localStorage.setItem('sakhi_seen_' + selectedChatId, String(Date.now()));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   // ---------- actions ----------
@@ -199,7 +204,7 @@ const UserDashboard = () => {
           [other.id]: other.name || other.email?.split('@')[0] || 'User',
         },
       }, { merge: true });
-      setSelectedChatId(id);
+      openChat(id);
       setActiveTab('messages');
     } catch {
       toast.error('Could not open chat. Try again.');
@@ -219,6 +224,7 @@ const UserDashboard = () => {
       await updateDoc(doc(db, 'chats', selectedChatId), {
         lastMsg: text,
         lastMsgAt: serverTimestamp(),
+        lastFrom: user.uid,
       });
     } catch {
       toast.error('Message failed to send.');
@@ -255,12 +261,35 @@ const UserDashboard = () => {
 
   // ---------- derived ----------
   const iHavePrefs = hasPrefs(profile);
-  const candidates = iHavePrefs
+  const allCandidates = iHavePrefs
     ? allUsers
         .filter((u) => hasPrefs(u))
         .map((u) => ({ ...u, score: scoreMatch(profile.preferences, u.preferences) }))
         .sort((a, b) => b.score - a.score)
     : [];
+  const candidates = cityFilter.trim()
+    ? allCandidates.filter((u) => (u.location || '').toLowerCase().includes(cityFilter.trim().toLowerCase()))
+    : allCandidates;
+
+  const completeness = (() => {
+    if (!profile) return 0;
+    const fields = [
+      profile.name, profile.age, profile.occupation, profile.location,
+      profile.preferences?.sleep, profile.preferences?.cleanliness, profile.preferences?.social,
+    ];
+    return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+  })();
+
+  // unread = last message from the other person, newer than when I last opened the chat
+  const isUnread = (chat) =>
+    chat.lastFrom && chat.lastFrom !== user.uid &&
+    (chat.lastMsgAt?.toMillis?.() || 0) > Number(localStorage.getItem('sakhi_seen_' + chat.id) || 0);
+  const unreadCount = chats.filter(isUnread).length;
+
+  const openChat = (chatId) => {
+    setSelectedChatId(chatId);
+    localStorage.setItem('sakhi_seen_' + chatId, String(Date.now()));
+  };
 
   const otherNameOf = (chat) => {
     const otherUid = (chat.participants || []).find((p) => p !== user.uid);
@@ -296,7 +325,7 @@ const UserDashboard = () => {
                   <button
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
-                    className={`px-3 py-2 rounded font-semibold flex items-center gap-1.5 text-sm sm:text-base ${
+                    className={`relative px-3 py-2 rounded font-semibold flex items-center gap-1.5 text-sm sm:text-base ${
                       activeTab === t.id
                         ? 'bg-blue-400 text-white'
                         : 'bg-transparent hover:bg-blue-400/20 text-blue-200'
@@ -304,6 +333,11 @@ const UserDashboard = () => {
                   >
                     <t.icon size={16} />
                     <span className="hidden sm:inline">{t.label}</span>
+                    {t.id === 'messages' && unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 rounded-full text-[11px] font-bold flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -357,14 +391,40 @@ const UserDashboard = () => {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="col-span-2 space-y-4">
-                        <h2 className="text-xl font-semibold">Your Matches</h2>
+                        {/* Stats row */}
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { label: 'Matches', value: allCandidates.length },
+                            { label: 'Conversations', value: chats.length },
+                            { label: 'Profile Complete', value: completeness + '%' },
+                          ].map((s) => (
+                            <div key={s.label} className={`${card} text-center py-3`}>
+                              <div className="text-2xl font-bold text-blue-400">{s.value}</div>
+                              <div className="text-xs text-blue-200">{s.label}</div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <h2 className="text-xl font-semibold">Your Matches</h2>
+                          <input
+                            type="text"
+                            placeholder="Filter by city…"
+                            value={cityFilter}
+                            onChange={(e) => setCityFilter(e.target.value)}
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-44"
+                          />
+                        </div>
                         {candidates.length === 0 ? (
                           <div className={`${card} p-8 text-center`}>
                             <Heart className="w-8 h-8 text-blue-300 mx-auto mb-3" />
-                            <p className="font-medium mb-1">No matches yet</p>
+                            <p className="font-medium mb-1">
+                              {cityFilter.trim() ? `No matches in "${cityFilter.trim()}"` : 'No matches yet'}
+                            </p>
                             <p className="text-sm text-blue-200">
-                              Sakhi is growing! You'll see compatible roommates here as more women
-                              join and set their preferences.
+                              {cityFilter.trim()
+                                ? 'Try clearing the city filter to see all your matches.'
+                                : "Sakhi is growing! You'll see compatible roommates here as more women join and set their preferences."}
                             </p>
                           </div>
                         ) : (
@@ -408,6 +468,25 @@ const UserDashboard = () => {
                       </div>
 
                       <div className="space-y-4">
+                        {completeness < 100 && (
+                          <div className={card}>
+                            <h2 className="text-lg font-semibold mb-2">Complete Your Profile</h2>
+                            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden mb-2">
+                              <div
+                                className="h-full bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full transition-all"
+                                style={{ width: completeness + '%' }}
+                              ></div>
+                            </div>
+                            <p className="text-sm text-blue-200 mb-2">{completeness}% done — complete profiles get better matches!</p>
+                            <button
+                              onClick={() => setActiveTab('profile')}
+                              className="text-sm text-blue-300 hover:underline flex items-center"
+                            >
+                              <Edit className="w-4 h-4 mr-1" /> Finish Profile
+                            </button>
+                          </div>
+                        )}
+
                         <div className={card}>
                           <h2 className="text-lg font-semibold mb-2">Your Preferences</h2>
                           <ul className="text-sm space-y-1 text-blue-100">
@@ -452,7 +531,7 @@ const UserDashboard = () => {
                       chats.map((chat) => (
                         <div
                           key={chat.id}
-                          onClick={() => setSelectedChatId(chat.id)}
+                          onClick={() => openChat(chat.id)}
                           className={`flex items-center p-3 rounded-lg cursor-pointer mb-2 transition ${
                             selectedChatId === chat.id ? 'bg-blue-700/40' : 'hover:bg-slate-700/30'
                           }`}
@@ -464,6 +543,7 @@ const UserDashboard = () => {
                             <div className="font-medium text-blue-200">{otherNameOf(chat)}</div>
                             <div className="text-xs text-gray-300 truncate">{chat.lastMsg || 'Say hi! 👋'}</div>
                           </div>
+                          {isUnread(chat) && <div className="ml-2 w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0" />}
                         </div>
                       ))
                     )}
