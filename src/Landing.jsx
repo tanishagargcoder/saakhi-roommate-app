@@ -13,6 +13,9 @@ const Landing = () => {
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-16 flex flex-col items-center">
           <div className="text-center max-w-4xl mx-auto mb-12">
+            <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#e8eaf6] text-sm font-medium mb-6">
+              🏠 India's women-only roommate finder
+            </span>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
               Find Your Perfect <span className="text-[#c5cae9]">Roommate</span>
             </h1>
@@ -27,22 +30,70 @@ const Landing = () => {
               >
                 Get Started
               </button>
-              <button 
-                onClick={() => navigate('/login')}
+              <button
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                 className="sakhi-button-secondary"
               >
                 Learn More
               </button>
             </div>
+
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#c5cae9]">
+              <span>🛡️ Verified profiles</span>
+              <span>👩 Women-only community</span>
+              <span>🔒 Privacy first</span>
+            </div>
           </div>
-          
-          <div className="w-full max-w-4xl">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl overflow-hidden p-1">
-              <img 
-                src="https://via.placeholder.com/1000x500?text=Sakhi+Platform+Preview" 
-                alt="Platform preview" 
-                className="w-full h-auto rounded-xl"
-              />
+
+          <div className="w-full max-w-4xl animate-float">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
+              {/* Mock browser bar */}
+              <div className="flex items-center gap-2 px-4 py-3 bg-white/10 border-b border-white/10">
+                <span className="w-3 h-3 rounded-full bg-[#ef9a9a]"></span>
+                <span className="w-3 h-3 rounded-full bg-[#ffe082]"></span>
+                <span className="w-3 h-3 rounded-full bg-[#a5d6a7]"></span>
+                <div className="ml-4 flex-1 max-w-xs px-3 py-1 bg-white/10 rounded-full text-xs text-[#c5cae9] text-center">
+                  sakhi.app/matches
+                </div>
+              </div>
+
+              {/* Mock app content */}
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <div className="text-white font-semibold">Your Top Matches</div>
+                    <div className="text-xs text-[#c5cae9]">Based on lifestyle & preferences</div>
+                  </div>
+                  <div className="px-3 py-1 bg-[#7986cb]/40 rounded-full text-xs text-[#e8eaf6]">3 new today</div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { initial: 'A', match: '95%', from: '#7986cb', to: '#3949ab' },
+                    { initial: 'P', match: '91%', from: '#9fa8da', to: '#5c6bc0' },
+                    { initial: 'R', match: '88%', from: '#c5cae9', to: '#7986cb' }
+                  ].map((card, index) => (
+                    <div key={index} className="bg-white/10 rounded-xl border border-white/10 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                          style={{ background: `linear-gradient(135deg, ${card.from}, ${card.to})` }}
+                        >
+                          {card.initial}
+                        </div>
+                        <span className="px-2 py-0.5 bg-[#a5d6a7]/20 text-[#a5d6a7] rounded-full text-xs font-semibold">
+                          {card.match} match
+                        </span>
+                      </div>
+                      <div className="h-2.5 bg-white/20 rounded-full w-3/4 mb-2"></div>
+                      <div className="h-2.5 bg-white/10 rounded-full w-1/2 mb-3"></div>
+                      <span className="inline-block px-2 py-0.5 bg-white/10 rounded-full text-xs text-[#c5cae9]">
+                        ✓ Verified
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -181,28 +232,6 @@ const Landing = () => {
                   ))}
                 </ul>
               </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Team Section */}
-        <section className="py-16 scroll-mt-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#7986cb]/50 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Our Team</span>
-              <h2 className="text-3xl font-bold text-white">Team 404 Girls Found</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 justify-items-center">
-              {['Tanisha', 'Nandini', 'Anshika'].map((member, index) => (
-                <div key={index} className="sakhi-card p-6 text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] mx-auto flex items-center justify-center text-white text-xl font-bold mb-4">
-                    {member[0]}
-                  </div>
-                  <h3 className="text-white font-medium">{member}</h3>
-                  <p className="text-[#c5cae9] text-sm">Developer</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>

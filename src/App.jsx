@@ -4,6 +4,7 @@ import Landing from './Landing';
 import Login from './Login';
 import UserDashboard from './UserDashboard';
 import AdminDashboard from './AdminDashboard';
+import { AuthProvider, ProtectedRoute } from './AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -11,27 +12,44 @@ import VoiceAssistant from './components/voiceassistant';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          {/* Landing page */}
-          <Route path="/" element={<Landing />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="App">
+          <Routes>
+            {/* Landing page */}
+            <Route path="/" element={<Landing />} />
 
-          {/* Login page */}
-          <Route path="/login" element={<Login />} />
+            {/* Auth pages */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Login startInSignup />} />
 
-          {/* User Dashboard (after login) */}
-          <Route path="/dashboard" element={<UserDashboard />} />
+            {/* User Dashboard (after login) */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Admin Dashboard (if needed separately) */}
-          <Route path="/admin" element={<AdminDashboard />} />
-        </Routes>
+            {/* Admin Dashboard (if needed separately) */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
 
-        {/* Toast container for success/error messages */}
-        <ToastContainer />
-        <VoiceAssistant /> {/* ✅ Add Voice Assistant */}
-      </div>
-    </BrowserRouter>
+          {/* Toast container for success/error messages */}
+          <ToastContainer />
+          <VoiceAssistant />
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

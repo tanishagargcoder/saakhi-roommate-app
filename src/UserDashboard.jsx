@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Shield, CheckCircle, AlertCircle, MapPin, Edit, Camera, Bell, User, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';  // <-- import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebase';
+import { useAuth } from './AuthContext';
 
 const matchesData = [
   { id: 1, name: 'Tanisha', score: 92, room: 'Room 102, Sunny Side', verified: true },
@@ -45,18 +48,9 @@ const iconMap = {
 };
 
 const UserDashboard = () => {
-  const navigate = useNavigate(); // <-- initialize navigate
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.id = 'omnidimension-web-widget';
-    script.async = true;
-    script.src = "https://backend.omnidim.io/web_widget.js?secret_key=e99bc6cd0df6f150c04accc866dbc39d";
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'there';
 
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
@@ -84,13 +78,9 @@ const UserDashboard = () => {
     setTypedMsg('');
   };
 
-  // New function: handle sign out and navigate to main page
-  const handleSignOut = () => {
-    // Clear any auth tokens or user data if applicable, e.g.:
-    // localStorage.removeItem('authToken');
-    // sessionStorage.clear();
-
-    navigate('/'); // Adjust path to your main or login page route
+  const handleSignOut = async () => {
+    await signOut(auth);
+    navigate('/');
   };
 
   useEffect(() => {
@@ -170,7 +160,7 @@ const UserDashboard = () => {
               {/* Right side actions */}
               <div className="flex items-center space-x-4">
                 <div className="text-white text-sm">
-                  Hi, <span className="font-medium">UserName</span>
+                  Hi, <span className="font-medium">{displayName}</span>
                 </div>
                 {/* Bell Dropdown */}
                 <div className="relative" ref={notificationRef}>
@@ -233,11 +223,9 @@ const UserDashboard = () => {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="relative">
-                          <img
-                            src={`https://via.placeholder.com/50?text=${match.name[0]}`}
-                            alt={match.name}
-                            className="w-12 h-12 rounded-full"
-                          />
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-lg font-bold">
+                            {match.name[0]}
+                          </div>
                           {match.verified && (
                             <CheckCircle className="absolute -bottom-1 -right-1 w-5 h-5 text-emerald-400" />
                           )}

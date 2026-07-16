@@ -1,13 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Eye, EyeOff, CheckCircle2, XCircle, LogIn } from 'lucide-react';
-import { auth } from './firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
+import { auth, db } from './firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  sendPasswordResetEmail
+} from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from './AuthContext';
 
-const Login = () => {
+// Map Firebase error codes to friendly messages
+const friendlyError = (err) => {
+  const code = err?.code || '';
+  const messages = {
+    'auth/invalid-credential': 'Incorrect email or password.',
+    'auth/wrong-password': 'Incorrect email or password.',
+    'auth/user-not-found': 'No account found with this email.',
+    'auth/invalid-email': 'Please enter a valid email address.',
+    'auth/email-already-in-use': 'An account with this email already exists. Try logging in.',
+    'auth/weak-password': 'Password should be at least 6 characters.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+    'auth/network-request-failed': 'Network error. Check your connection and try again.'
+  };
+  return messages[code] || 'Something went wrong. Please try again.';
+};
+
+const Login = ({ startInSignup = false }) => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
+  const { user, loading: authLoading } = useAuth();
+  const [isLogin, setIsLogin] = useState(!startInSignup);
+
+  // Already signed in? Go straight to the dashboard.
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -64,108 +95,72 @@ const Login = () => {
     );
   };
 
-  // Handle direct login for demo purposes
-  const handleDemoLogin = async () => {
-    setIsLoading(true);
-    
+  // Send a password reset email via Firebase
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      showToast("Enter your email above first, then click Forgot Password.", "error");
+      return;
+    }
     try {
-      // Demo credentials
-      const demoEmail = "demo@harmonymatch.com";
-      const demoPassword = "demo123";
-      
-      // Use the existing login endpoint
-      const res = await fetch("http://localhost:8000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          username: demoEmail,
-          password: demoPassword,
-        }),
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.detail || "Demo login failed");
-      
-      // Store auth data in localStorage
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      
-      showToast("Demo login successful!", "success");
-      
-      // Redirect to dashboard after successful login
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
+      await sendPasswordResetEmail(auth, formData.email);
+      showToast("Password reset email sent! Check your inbox.", "success");
     } catch (err) {
-      showToast(err.message || "Demo login failed", "error");
-    } finally {
-      setIsLoading(false);
+      showToast(friendlyError(err), "error");
     }
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
+    e.preventDefault();
+    setIsLoading(true);
 
-  if (isLogin) {
-    // LOGIN WITH FIREBASE
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      const user = userCredential.user;
+    if (isLogin) {
+      // LOGIN WITH FIREBASE
+      try {
+        await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        showToast("Login successful!", "success");
+        navigate('/dashboard');
+      } catch (err) {
+        showToast(friendlyError(err), "error");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // SIGNUP WITH FIREBASE
+      if (!formData.name.trim()) {
+        showToast("Please enter your full name", "error");
+        setIsLoading(false);
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        showToast("Passwords do not match", "error");
+        setIsLoading(false);
+        return;
+      }
 
-      showToast("Login successful!", "success");
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const newUser = userCredential.user;
 
-      // Save Firebase ID token (optional)
-      const token = await user.getIdToken();
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-      }));
+        // Set display name and save profile to Firestore
+        await updateProfile(newUser, { displayName: formData.name.trim() });
+        await setDoc(doc(db, 'users', newUser.uid), {
+          name: formData.name.trim(),
+          email: formData.email,
+          age: formData.age,
+          occupation: formData.occupation,
+          location: formData.location,
+          createdAt: serverTimestamp()
+        });
 
-      setTimeout(() => navigate('/dashboard'), 1000);
-    } catch (err) {
-      showToast(err.message, "error");
-    } finally {
-      setIsLoading(false);
+        showToast("Welcome to Sakhi! 🎉", "success");
+        navigate('/dashboard');
+      } catch (err) {
+        showToast(friendlyError(err), "error");
+      } finally {
+        setIsLoading(false);
+      }
     }
-  } else {
-    // SIGNUP WITH FIREBASE
-    if (formData.password !== formData.confirmPassword) {
-      showToast("Passwords do not match", "error");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const user = userCredential.user;
-
-      showToast("Signup successful! Please login.", "success");
-      setIsLogin(true);
-
-      // Optionally store user info in Firestore
-      // (Not implemented here)
-
-      // Clear form except email
-      const email = formData.email;
-      setFormData({
-        name: '',
-        email: email,
-        password: '',
-        confirmPassword: '',
-        age: '',
-        occupation: '',
-        location: ''
-      });
-    } catch (err) {
-      showToast(err.message, "error");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-};
+  };
 
   const WomenSilhouetteSVG = () => (
     <svg viewBox="0 0 400 300" style={{ width: '100%', height: '200px' }}>
@@ -245,10 +240,6 @@ const Login = () => {
           <div style={styles.feature}>
             <div style={styles.featureIcon}>🔒</div>
             <span>Privacy Protected</span>
-          </div>
-          <div style={styles.feature}>
-            <div style={styles.featureIcon}>🏆</div>
-            <span>Team 404 Girls Found</span>
           </div>
         </div>
       </div>
@@ -396,7 +387,13 @@ const Login = () => {
 
               {isLogin && (
                 <div style={styles.forgotPassword}>
-                  <a href="#" style={styles.forgotLink}>Forgot Password?</a>
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    style={{ ...styles.forgotLink, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
               )}
 
@@ -418,31 +415,6 @@ const Login = () => {
                   <>{isLogin ? 'Sign In' : 'Create Account'}</>
                 )}
               </button>
-              
-              {/* Direct login button - Only show on login screen */}
-              {isLogin && (
-                <button 
-                  type="button" 
-                  onClick={handleDemoLogin} 
-                  disabled={isLoading}
-                  style={{
-                    ...styles.directLoginButton,
-                    ...(isLoading && styles.loadingButton)
-                  }}
-                >
-                  {isLoading ? (
-                    <div style={styles.loadingSpinner}>
-                      <div style={styles.spinner}></div>
-                      <span>Logging in...</span>
-                    </div>
-                  ) : (
-                    <div style={styles.buttonContent}>
-                      <LogIn size={18} />
-                      <span>Quick Demo Access</span>
-                    </div>
-                  )}
-                </button>
-              )}
             </div>
 
             <p style={styles.termsText}>
