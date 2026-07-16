@@ -4,13 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDduIwzsZTAfwjgT6aVuApfGRCr7uqz_9o",
-  authDomain: "sakhi-72ea4.firebaseapp.com",
-  projectId: "sakhi-72ea4",
-  storageBucket: "sakhi-72ea4.firebasestorage.app",
-  messagingSenderId: "110481934606",
-  appId: "1:110481934606:web:597ceadd456e7a9975ef5f",
-  measurementId: "G-T9W250374S"
+  apiKey: "AIzaSyDfKp8Bv_NVvlFwEiyi7RhQNN_n5adeiCM",
+  authDomain: "saakhi-roommate-app.firebaseapp.com",
+  projectId: "saakhi-roommate-app",
+  storageBucket: "saakhi-roommate-app.firebasestorage.app",
+  messagingSenderId: "167629681350",
+  appId: "1:167629681350:web:2f8c2f721e2e55d95f1dc7"
 };
 
 const app = initializeApp(firebaseConfig);
