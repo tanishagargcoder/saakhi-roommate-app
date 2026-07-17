@@ -160,7 +160,8 @@ const Landing = () => {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 bg-[#3949ab]/50 scroll-mt-16">
+        <section id="features" className="relative py-16 bg-[#3949ab]/50 bg-dots scroll-mt-16 overflow-hidden">
+          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#7986cb]/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="container mx-auto px-4">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Features</span>
@@ -265,7 +266,8 @@ const Landing = () => {
         </section>
         
         {/* About Section */}
-        <section id="about" className="py-16 bg-[#3949ab]/50 scroll-mt-16">
+        <section id="about" className="relative py-16 bg-[#3949ab]/50 bg-dots scroll-mt-16 overflow-hidden">
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#c5cae9]/15 rounded-full blur-3xl pointer-events-none"></div>
           <div className="container mx-auto px-4">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Our Story</span>

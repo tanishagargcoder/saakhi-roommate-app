@@ -101,6 +101,10 @@ const UserDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [cityFilter, setCityFilter] = useState('');
 
+  // match interactions
+  const [selectedMatch, setSelectedMatch] = useState(null);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+
   // room listings
   const [listings, setListings] = useState([]);
   const [showListingForm, setShowListingForm] = useState(false);
@@ -295,6 +299,39 @@ const UserDashboard = () => {
     }
   };
 
+  const toggleSaved = async (matchId) => {
+    const saved = profile?.savedIds || [];
+    const updated = saved.includes(matchId) ? saved.filter((id) => id !== matchId) : [...saved, matchId];
+    setProfile((p) => ({ ...(p || {}), savedIds: updated }));
+    try {
+      await setDoc(doc(db, 'users', user.uid), { savedIds: updated }, { merge: true });
+    } catch {
+      toast.error('Could not save. Check your connection.');
+    }
+  };
+
+  const blockAndReport = async (other) => {
+    const sure = window.confirm(
+      `Report and block ${other.name || 'this member'}? She will no longer appear in your matches or messages.`
+    );
+    if (!sure) return;
+    const updated = [...(profile?.blockedIds || []), other.id];
+    setProfile((p) => ({ ...(p || {}), blockedIds: updated }));
+    setSelectedMatch(null);
+    try {
+      await setDoc(doc(db, 'users', user.uid), { blockedIds: updated }, { merge: true });
+      await addDoc(collection(db, 'reports'), {
+        reporterId: user.uid,
+        reportedId: other.id,
+        reportedName: other.name || '',
+        createdAt: serverTimestamp(),
+      });
+      toast.success('Reported and blocked. Stay safe! 💙');
+    } catch {
+      toast.error('Could not complete the report. Try again.');
+    }
+  };
+
   const toggleChecklistItem = async (itemId) => {
     const current = !!profile?.checklist?.[itemId];
     const updated = { ...(profile?.checklist || {}), [itemId]: !current };
@@ -345,15 +382,21 @@ const UserDashboard = () => {
 
   // ---------- derived ----------
   const iHavePrefs = hasPrefs(profile);
+  const blockedIds = profile?.blockedIds || [];
+  const savedIds = profile?.savedIds || [];
   const allCandidates = iHavePrefs
     ? allUsers
-        .filter((u) => hasPrefs(u))
+        .filter((u) => hasPrefs(u) && !blockedIds.includes(u.id))
         .map((u) => ({ ...u, score: scoreMatch(profile.preferences, u.preferences) }))
         .sort((a, b) => b.score - a.score)
     : [];
-  const candidates = cityFilter.trim()
-    ? allCandidates.filter((u) => (u.location || '').toLowerCase().includes(cityFilter.trim().toLowerCase()))
-    : allCandidates;
+  const candidates = allCandidates
+    .filter((u) => !cityFilter.trim() || (u.location || '').toLowerCase().includes(cityFilter.trim().toLowerCase()))
+    .filter((u) => !showSavedOnly || savedIds.includes(u.id));
+
+  const visibleChats = chats.filter(
+    (c) => !(c.participants || []).some((p) => p !== user.uid && blockedIds.includes(p))
+  );
 
   const completeness = (() => {
     if (!profile) return 0;
@@ -368,7 +411,7 @@ const UserDashboard = () => {
   const isUnread = (chat) =>
     chat.lastFrom && chat.lastFrom !== user.uid &&
     (chat.lastMsgAt?.toMillis?.() || 0) > Number(localStorage.getItem('sakhi_seen_' + chat.id) || 0);
-  const unreadCount = chats.filter(isUnread).length;
+  const unreadCount = visibleChats.filter(isUnread).length;
 
   const openChat = (chatId) => {
     setSelectedChatId(chatId);
@@ -396,7 +439,9 @@ const UserDashboard = () => {
 
   // ---------- render ----------
   return (
-    <div className="relative min-h-screen w-full text-white bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900">
+    <div className="relative min-h-screen w-full text-white bg-gradient-to-br from-[#283593] via-[#303f9f] to-[#1a237e] bg-dots">
+      <div className="fixed top-0 -left-40 w-[500px] h-[500px] bg-[#7986cb]/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="fixed bottom-0 -right-40 w-[500px] h-[500px] bg-[#5c6bc0]/20 rounded-full blur-3xl pointer-events-none"></div>
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Navbar */}
         <motion.nav
@@ -530,13 +575,25 @@ const UserDashboard = () => {
 
                         <div className="flex items-center justify-between gap-3 flex-wrap">
                           <h2 className="text-xl font-semibold">Your Matches</h2>
-                          <input
-                            type="text"
-                            placeholder="Filter by city…"
-                            value={cityFilter}
-                            onChange={(e) => setCityFilter(e.target.value)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-800 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-44"
-                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setShowSavedOnly((s) => !s)}
+                              className={`px-3 py-1.5 rounded-lg text-sm border transition flex items-center gap-1.5 ${
+                                showSavedOnly
+                                  ? 'bg-pink-500/25 border-pink-400/60 text-pink-200'
+                                  : 'bg-slate-800 border-blue-400/30 text-blue-200 hover:border-blue-400'
+                              }`}
+                            >
+                              <Heart size={14} className={showSavedOnly ? 'fill-pink-400 text-pink-400' : ''} /> Saved
+                            </button>
+                            <input
+                              type="text"
+                              placeholder="Filter by city…"
+                              value={cityFilter}
+                              onChange={(e) => setCityFilter(e.target.value)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-800 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-40"
+                            />
+                          </div>
                         </div>
                         {candidates.length === 0 ? (
                           <div className={`${card} p-8 text-center`}>
@@ -553,7 +610,11 @@ const UserDashboard = () => {
                         ) : (
                           candidates.map((m) => (
                             <div key={m.id} className={`${card} hover:border-blue-400/40 transition`}>
-                              <div className="flex justify-between items-center gap-3 flex-wrap">
+                              <div
+                                className="flex justify-between items-center gap-3 flex-wrap cursor-pointer"
+                                onClick={() => setSelectedMatch(m)}
+                                title="View profile"
+                              >
                                 <div className="flex items-center space-x-3">
                                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-lg font-bold">
                                     {initialOf(m.name)}
@@ -579,12 +640,31 @@ const UserDashboard = () => {
                                   )}
                                 </div>
                               </div>
-                              <button
-                                onClick={() => openChatWith(m)}
-                                className="mt-3 px-4 py-1.5 text-sm rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium flex items-center gap-1.5"
-                              >
-                                <MessageCircle size={14} /> Message
-                              </button>
+                              <div className="flex items-center gap-2 mt-3">
+                                <button
+                                  onClick={() => openChatWith(m)}
+                                  className="px-4 py-1.5 text-sm rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium flex items-center gap-1.5"
+                                >
+                                  <MessageCircle size={14} /> Message
+                                </button>
+                                <button
+                                  onClick={() => toggleSaved(m.id)}
+                                  title={savedIds.includes(m.id) ? 'Remove from saved' : 'Save for later'}
+                                  className={`p-2 rounded-full border transition ${
+                                    savedIds.includes(m.id)
+                                      ? 'bg-pink-500/25 border-pink-400/60'
+                                      : 'border-blue-400/30 hover:border-pink-400/60'
+                                  }`}
+                                >
+                                  <Heart size={15} className={savedIds.includes(m.id) ? 'fill-pink-400 text-pink-400' : 'text-blue-200'} />
+                                </button>
+                                <button
+                                  onClick={() => setSelectedMatch(m)}
+                                  className="ml-auto text-sm text-blue-300 hover:underline"
+                                >
+                                  View Profile →
+                                </button>
+                              </div>
                             </div>
                           ))
                         )}
@@ -792,13 +872,13 @@ const UserDashboard = () => {
               {activeTab === 'messages' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-1 bg-slate-900/70 p-4 rounded-lg max-h-[530px] overflow-y-auto">
-                    {chats.length === 0 ? (
+                    {visibleChats.length === 0 ? (
                       <div className="text-center py-10 text-blue-200 text-sm">
                         <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-60" />
                         No conversations yet.<br />Message a match to start chatting!
                       </div>
                     ) : (
-                      chats.map((chat) => (
+                      visibleChats.map((chat) => (
                         <div
                           key={chat.id}
                           onClick={() => openChat(chat.id)}
@@ -1043,6 +1123,105 @@ const UserDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* ---------------- MATCH DETAIL MODAL ---------------- */}
+      {selectedMatch && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSelectedMatch(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-2xl bg-[#1e2761] border border-blue-400/30 shadow-2xl p-6 max-h-[85vh] overflow-y-auto"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xl font-bold">
+                  {initialOf(selectedMatch.name)}
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold">{selectedMatch.name || 'Sakhi member'}</h2>
+                  <p className="text-sm text-blue-200">
+                    {[selectedMatch.age && `${selectedMatch.age} yrs`, selectedMatch.occupation]
+                      .filter(Boolean).join(' • ')}
+                  </p>
+                  {selectedMatch.location && (
+                    <p className="text-sm text-blue-200 flex items-center">
+                      <MapPin className="w-3 h-3 mr-0.5" />{selectedMatch.location}
+                      {sameCity(selectedMatch.location, profile?.location) && (
+                        <span className="ml-2 text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">Same city</span>
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className={`text-xl font-bold ${scoreColor(selectedMatch.score)}`}>
+                {selectedMatch.score}%
+              </span>
+            </div>
+
+            <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wide mb-2">
+              Lifestyle Compatibility
+            </h3>
+            <div className="space-y-2 mb-5">
+              {PREF_FIELDS.map((f) => {
+                const mine = profile?.preferences?.[f.key];
+                const hers = selectedMatch.preferences?.[f.key];
+                const exact = mine === hers;
+                const close = Math.abs(f.options.indexOf(mine) - f.options.indexOf(hers)) === 1;
+                return (
+                  <div key={f.key} className="bg-white/5 rounded-lg px-4 py-2.5">
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-blue-200">{f.label}</span>
+                      <span className={exact ? 'text-emerald-300' : close ? 'text-amber-300' : 'text-red-300'}>
+                        {exact ? '✓ Perfect match' : close ? '~ Close enough' : '✗ Different'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>You: <span className="font-medium">{mine}</span></span>
+                      <span>Her: <span className="font-medium">{hers}</span></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { openChatWith(selectedMatch); setSelectedMatch(null); }}
+                className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={16} /> Message
+              </button>
+              <button
+                onClick={() => toggleSaved(selectedMatch.id)}
+                className={`p-2.5 rounded-lg border transition ${
+                  savedIds.includes(selectedMatch.id)
+                    ? 'bg-pink-500/25 border-pink-400/60'
+                    : 'border-blue-400/30 hover:border-pink-400/60'
+                }`}
+              >
+                <Heart size={18} className={savedIds.includes(selectedMatch.id) ? 'fill-pink-400 text-pink-400' : 'text-blue-200'} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-blue-400/10">
+              <button
+                onClick={() => blockAndReport(selectedMatch)}
+                className="text-sm text-red-300 hover:text-red-200 flex items-center gap-1"
+              >
+                <Shield size={14} /> Report & Block
+              </button>
+              <button onClick={() => setSelectedMatch(null)} className="text-sm text-blue-300 hover:underline">
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -17,6 +17,12 @@ service cloud.firestore {
         && resource.data.ownerId == request.auth.uid;
     }
 
+    // Safety reports: members can file them; nobody can read them from the client
+    match /reports/{reportId} {
+      allow create: if request.auth != null
+        && request.resource.data.reporterId == request.auth.uid;
+    }
+
     // Chats are visible only to their two participants
     match /chats/{chatId} {
       allow read, update: if request.auth != null

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
   
   // Function to handle smooth scrolling to sections
   const scrollToSection = (sectionId) => {
@@ -57,15 +60,26 @@ const NavBar = () => {
           </nav>
           
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login" className="px-4 py-2 text-white hover:text-[#c5cae9] transition-colors">
-              Sign In
-            </Link>
-            <Link 
-              to="/register" 
-              className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors font-medium"
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors font-medium flex items-center gap-2"
+              >
+                <LayoutDashboard size={16} /> Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="px-4 py-2 text-white hover:text-[#c5cae9] transition-colors">
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors font-medium"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
           
           {/* Mobile menu button */}
@@ -109,15 +123,26 @@ const NavBar = () => {
               >
                 About
               </button>
-              <Link to="/login" className="text-[#e8eaf6] hover:text-white transition-colors">
-                Sign In
-              </Link>
-              <Link 
-                to="/register" 
-                className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors inline-block w-max"
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors inline-flex items-center gap-2 w-max"
+                >
+                  <LayoutDashboard size={16} /> Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className="text-[#e8eaf6] hover:text-white transition-colors">
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors inline-block w-max"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

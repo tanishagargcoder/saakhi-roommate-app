@@ -222,6 +222,18 @@ const Login = ({ startInSignup = false }) => {
   return (
     <div style={styles.container}>
       <div style={styles.leftPanel}>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          style={{
+            position: 'absolute', top: 20, left: 20,
+            background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)',
+            color: '#fff', borderRadius: 20, padding: '6px 14px',
+            cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500
+          }}
+        >
+          ← Back to Home
+        </button>
         <div style={styles.brandSection}>
           <HomeSVG />
           <h1 style={styles.brandTitle}>Sakhi</h1>

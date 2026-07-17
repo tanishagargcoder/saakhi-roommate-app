@@ -53,6 +53,12 @@ body {
   animation: pulse-soft 3s ease-in-out infinite;
 }
 
+/* Subtle dot-grid texture for section backgrounds */
+.bg-dots {
+  background-image: radial-gradient(rgba(197, 202, 233, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
 /* Card and button styling */
 .sakhi-card {
   background-color: rgba(255, 255, 255, 0.1);
