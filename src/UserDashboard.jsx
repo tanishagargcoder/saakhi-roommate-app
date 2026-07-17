@@ -56,8 +56,8 @@ const CHECKLIST = [
 ];
 const EMPTY_LISTING = { title: '', city: '', rent: '', roomType: 'Private Room', description: '', amenities: [] };
 
-const card = 'p-4 rounded-xl bg-indigo-900/40 backdrop-blur-sm border border-blue-400/20 transition-colors';
-const inputCls = 'w-full px-3 py-2 rounded-lg bg-indigo-950/70 border border-blue-400/30 text-white focus:outline-none focus:border-blue-400';
+const card = 'p-4 rounded-xl bg-blue-900/50 backdrop-blur-sm border border-blue-400/20 transition-colors';
+const inputCls = 'w-full px-3 py-2 rounded-lg bg-blue-950/80 border border-blue-400/30 text-white focus:outline-none focus:border-blue-400';
 const labelCls = 'block text-sm text-blue-200 mb-1';
 
 // ---------- preferences form (shared by onboarding + profile) ----------
@@ -439,16 +439,16 @@ const UserDashboard = () => {
 
   // ---------- render ----------
   return (
-    <div className="relative min-h-screen w-full text-white bg-gradient-to-br from-[#283593] via-[#303f9f] to-[#1a237e]">
-      <div className="fixed top-0 -left-40 w-[500px] h-[500px] bg-[#7986cb]/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="fixed bottom-0 -right-40 w-[500px] h-[500px] bg-[#5c6bc0]/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="relative min-h-screen w-full text-white bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900">
+      <div className="fixed top-0 -left-40 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="fixed bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Navbar */}
         <motion.nav
           initial={{ y: -80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="fixed top-0 left-0 w-full bg-[#141a4d]/80 backdrop-blur-xl shadow-lg z-20 border-b border-blue-400/20"
+          className="fixed top-0 left-0 w-full bg-blue-900/80 backdrop-blur-xl shadow-lg z-20 border-b border-blue-400/20"
         >
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
@@ -581,7 +581,7 @@ const UserDashboard = () => {
                               className={`px-3 py-1.5 rounded-lg text-sm border transition flex items-center gap-1.5 ${
                                 showSavedOnly
                                   ? 'bg-pink-500/25 border-pink-400/60 text-pink-200'
-                                  : 'bg-indigo-950/70 border-blue-400/30 text-blue-200 hover:border-blue-400'
+                                  : 'bg-blue-950/80 border-blue-400/30 text-blue-200 hover:border-blue-400'
                               }`}
                             >
                               <Heart size={14} className={showSavedOnly ? 'fill-pink-400 text-pink-400' : ''} /> Saved
@@ -591,7 +591,7 @@ const UserDashboard = () => {
                               placeholder="Filter by city…"
                               value={cityFilter}
                               onChange={(e) => setCityFilter(e.target.value)}
-                              className="px-3 py-1.5 rounded-lg bg-indigo-950/70 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-40"
+                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-40"
                             />
                           </div>
                         </div>
@@ -674,7 +674,7 @@ const UserDashboard = () => {
                         {completeness < 100 && (
                           <div className={card}>
                             <h2 className="text-lg font-semibold mb-2">Complete Your Profile</h2>
-                            <div className="w-full h-2 bg-indigo-950/80 rounded-full overflow-hidden mb-2">
+                            <div className="w-full h-2 bg-blue-950 rounded-full overflow-hidden mb-2">
                               <div
                                 className="h-full bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full transition-all"
                                 style={{ width: completeness + '%' }}
@@ -871,7 +871,7 @@ const UserDashboard = () => {
               {/* ---------------- MESSAGES ---------------- */}
               {activeTab === 'messages' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="md:col-span-1 bg-indigo-950/50 p-4 rounded-lg max-h-[530px] overflow-y-auto">
+                  <div className="md:col-span-1 bg-blue-950/60 p-4 rounded-lg max-h-[530px] overflow-y-auto">
                     {visibleChats.length === 0 ? (
                       <div className="text-center py-10 text-blue-200 text-sm">
                         <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-60" />
@@ -883,7 +883,7 @@ const UserDashboard = () => {
                           key={chat.id}
                           onClick={() => openChat(chat.id)}
                           className={`flex items-center p-3 rounded-lg cursor-pointer mb-2 transition ${
-                            selectedChatId === chat.id ? 'bg-blue-700/40' : 'hover:bg-indigo-800/30'
+                            selectedChatId === chat.id ? 'bg-blue-700/40' : 'hover:bg-blue-800/40'
                           }`}
                         >
                           <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3 text-lg font-bold">
@@ -899,7 +899,7 @@ const UserDashboard = () => {
                     )}
                   </div>
 
-                  <div className="md:col-span-2 bg-indigo-950/50 p-4 rounded-lg flex flex-col h-[500px]">
+                  <div className="md:col-span-2 bg-blue-950/60 p-4 rounded-lg flex flex-col h-[500px]">
                     {selectedChatId ? (
                       <>
                         <div className="flex items-center mb-3 pb-3 border-b border-blue-400/20">
@@ -928,7 +928,7 @@ const UserDashboard = () => {
                         <div className="flex items-center">
                           <input
                             type="text"
-                            className="w-full px-3 py-2 rounded-l-lg bg-indigo-950/70 text-white focus:outline-none"
+                            className="w-full px-3 py-2 rounded-l-lg bg-blue-950/80 text-white focus:outline-none"
                             placeholder="Type your message…"
                             value={typedMsg}
                             onChange={(e) => setTypedMsg(e.target.value)}
@@ -966,7 +966,7 @@ const UserDashboard = () => {
                         Things to sort out with your roommate before moving in together — tick them off as you go.
                       </p>
                       <div className="flex items-center gap-3 mb-5">
-                        <div className="flex-1 h-2 bg-indigo-950/80 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-blue-950 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full transition-all"
                             style={{ width: pct + '%' }}
@@ -984,7 +984,7 @@ const UserDashboard = () => {
                                 className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-lg border transition ${
                                   done
                                     ? 'bg-emerald-500/10 border-emerald-400/40'
-                                    : 'bg-indigo-900/40 border-blue-400/20 hover:border-blue-400/50'
+                                    : 'bg-blue-900/50 border-blue-400/20 hover:border-blue-400/50'
                                 }`}
                               >
                                 <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
@@ -1097,7 +1097,7 @@ const UserDashboard = () => {
                     <h2 className="text-lg font-semibold mb-4">Session</h2>
                     <button
                       onClick={handleSignOut}
-                      className="px-4 py-2 bg-indigo-800/70 hover:bg-indigo-700 rounded-lg text-sm font-semibold flex items-center gap-2"
+                      className="px-4 py-2 bg-blue-800 hover:bg-blue-700 rounded-lg text-sm font-semibold flex items-center gap-2"
                     >
                       <LogOut size={16} /> Sign Out
                     </button>
@@ -1135,7 +1135,7 @@ const UserDashboard = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl bg-[#1e2761] border border-blue-400/30 shadow-2xl p-6 max-h-[85vh] overflow-y-auto"
+            className="w-full max-w-md rounded-2xl bg-blue-900 border border-blue-400/40 shadow-2xl p-6 max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
