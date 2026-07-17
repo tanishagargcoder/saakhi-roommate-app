@@ -67,11 +67,11 @@ const Landing = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
+              <button
                 onClick={() => navigate('/register')}
-                className="sakhi-button-primary"
+                className="sakhi-button-primary text-lg px-8 py-3"
               >
-                Get Started
+                Get Started — it's free →
               </button>
               <button
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
@@ -149,11 +149,12 @@ const Landing = () => {
         {/* Highlights strip */}
         <section className="py-6 bg-[#283593]/60 border-y border-white/10">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 text-[#e8eaf6] font-medium">
-              <span>👩 100% Women-only</span>
-              <span>💸 Free to use</span>
-              <span>💬 Real-time private chat</span>
-              <span>🔒 Privacy-first profiles</span>
+            <div className="flex flex-wrap justify-center gap-3 text-[#e8eaf6] font-medium">
+              {['👩 100% Women-only', '💸 Free to use', '💬 Real-time private chat', '🔒 Privacy-first profiles'].map((chip) => (
+                <span key={chip} className="px-4 py-1.5 bg-white/5 border border-white/15 rounded-full text-sm">
+                  {chip}
+                </span>
+              ))}
             </div>
           </div>
         </section>
@@ -161,10 +162,13 @@ const Landing = () => {
         {/* Features Section */}
         <section id="features" className="py-16 bg-[#3949ab]/50 scroll-mt-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white">Why Choose Sakhi?</h2>
-              <div className="w-20 h-1 bg-[#c5cae9] mx-auto mt-4"></div>
-            </div>
+            <motion.div {...fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Features</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Sakhi?</h2>
+              <p className="text-lg text-[#c5cae9] max-w-2xl mx-auto mt-3">
+                Everything you need to find a roommate you'll actually get along with
+              </p>
+            </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -204,13 +208,13 @@ const Landing = () => {
         {/* How It Works Section */}
         <section id="how-it-works" className="py-16 scroll-mt-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white">How It Works</h2>
-              <div className="w-20 h-1 bg-[#c5cae9] mx-auto mt-4"></div>
-              <p className="text-lg text-[#e8eaf6] max-w-2xl mx-auto mt-4">
+            <motion.div {...fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Process</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">How It Works</h2>
+              <p className="text-lg text-[#c5cae9] max-w-2xl mx-auto mt-3">
                 Finding your perfect roommate is just a few simple steps away
               </p>
-            </div>
+            </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[
@@ -235,15 +239,20 @@ const Landing = () => {
                   description: "Finalize your roommate choice and start your harmonious living experience."
                 }
               ].map((item, index) => (
-                <div key={index} className="sakhi-card p-6 text-center relative">
+                <motion.div
+                  key={index}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: index * 0.1 }}
+                  className="sakhi-card p-6 text-center relative"
+                >
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-10 h-10 rounded-full bg-[#7986cb] flex items-center justify-center text-white font-bold">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] border border-[#c5cae9]/40 flex items-center justify-center text-white font-bold shadow-lg">
                       {item.step}
                     </div>
                   </div>
                   <h3 className="text-xl font-semibold text-white mt-4 mb-2">{item.title}</h3>
                   <p className="text-[#e8eaf6]">{item.description}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
             
@@ -258,10 +267,10 @@ const Landing = () => {
         {/* About Section */}
         <section id="about" className="py-16 bg-[#3949ab]/50 scroll-mt-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white">About Sakhi</h2>
-              <div className="w-20 h-1 bg-[#c5cae9] mx-auto mt-4"></div>
-            </div>
+            <motion.div {...fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Our Story</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">About Sakhi</h2>
+            </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
@@ -303,10 +312,11 @@ const Landing = () => {
         {/* FAQ Section */}
         <section id="faq" className="py-16 scroll-mt-16">
           <div className="container mx-auto px-4 max-w-3xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
-              <div className="w-20 h-1 bg-[#c5cae9] mx-auto mt-4"></div>
-            </div>
+            <motion.div {...fadeUp} className="text-center mb-12">
+              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">FAQ</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2>
+              <p className="text-lg text-[#c5cae9] mt-3">Everything you might be wondering about Sakhi</p>
+            </motion.div>
 
             <div className="space-y-3">
               {FAQS.map((faq, index) => (

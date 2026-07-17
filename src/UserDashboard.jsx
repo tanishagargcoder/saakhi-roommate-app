@@ -380,6 +380,11 @@ const UserDashboard = () => {
     return chat.participantNames?.[otherUid] || 'User';
   };
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  const scoreColor = (s) => (s >= 75 ? 'text-emerald-400' : s >= 50 ? 'text-blue-400' : 'text-slate-300');
+
   const tabs = [
     { id: 'matches', label: 'Matches', icon: Users },
     { id: 'rooms', label: 'Rooms', icon: Home },
@@ -460,6 +465,18 @@ const UserDashboard = () => {
             </div>
           )}
 
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-6"
+          >
+            <h1 className="text-2xl md:text-3xl font-bold">
+              {greeting}, <span className="bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">{displayName}</span> 👋
+            </h1>
+            <p className="text-blue-200 text-sm mt-1">Let's find you the perfect roommate.</p>
+          </motion.div>
+
           {profileLoading ? (
             <div className="flex justify-center pt-20">
               <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -495,13 +512,18 @@ const UserDashboard = () => {
                         {/* Stats row */}
                         <div className="grid grid-cols-3 gap-3">
                           {[
-                            { label: 'Matches', value: allCandidates.length },
-                            { label: 'Conversations', value: chats.length },
-                            { label: 'Profile Complete', value: completeness + '%' },
+                            { label: 'Matches', value: allCandidates.length, icon: Heart, tint: 'text-pink-300 bg-pink-500/15' },
+                            { label: 'Conversations', value: chats.length, icon: MessageCircle, tint: 'text-blue-300 bg-blue-500/15' },
+                            { label: 'Profile Complete', value: completeness + '%', icon: User, tint: 'text-emerald-300 bg-emerald-500/15' },
                           ].map((s) => (
-                            <div key={s.label} className={`${card} text-center py-3`}>
-                              <div className="text-2xl font-bold text-blue-400">{s.value}</div>
-                              <div className="text-xs text-blue-200">{s.label}</div>
+                            <div key={s.label} className={`${card} flex items-center gap-3 py-3`}>
+                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${s.tint}`}>
+                                <s.icon size={18} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xl font-bold leading-tight">{s.value}</div>
+                                <div className="text-xs text-blue-200 truncate">{s.label}</div>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -549,7 +571,7 @@ const UserDashboard = () => {
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-lg font-bold text-blue-400">{m.score}% Match</p>
+                                  <p className={`text-lg font-bold ${scoreColor(m.score)}`}>{m.score}% Match</p>
                                   {sameCity(m.location, profile?.location) && (
                                     <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">
                                       Same city
