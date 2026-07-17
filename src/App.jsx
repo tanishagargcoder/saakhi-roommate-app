@@ -4,6 +4,7 @@ import Landing from './Landing';
 import Login from './Login';
 import UserDashboard from './UserDashboard';
 import AdminDashboard from './AdminDashboard';
+import NotFound from './NotFound';
 import { AuthProvider, ProtectedRoute } from './AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,6 +43,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Catch-all 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
 
           {/* Toast container for success/error messages */}

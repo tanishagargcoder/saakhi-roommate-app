@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Shield, CheckCircle, MapPin, Edit, User, Send, Heart, Home, Plus,
-  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles, MailWarning
+  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles, MailWarning, ClipboardList
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +41,19 @@ const initialOf = (name) => (name || '?').trim().charAt(0).toUpperCase();
 const sameCity = (a, b) => a && b && a.trim().toLowerCase() === b.trim().toLowerCase();
 
 const AMENITIES = ['WiFi', 'AC', 'Furnished', 'Attached Bathroom', 'Kitchen Access', 'Parking'];
+
+const CHECKLIST = [
+  { id: 'rent', label: 'Agree on rent split & due date' },
+  { id: 'deposit', label: 'Decide how the security deposit is shared' },
+  { id: 'bills', label: 'Plan electricity, WiFi & utility bills' },
+  { id: 'cleaning', label: 'Set a cleaning schedule' },
+  { id: 'groceries', label: 'Discuss groceries & cooking arrangements' },
+  { id: 'guests', label: 'Agree on guests & overnight-visitor policy' },
+  { id: 'quiet', label: 'Set quiet hours for study / work' },
+  { id: 'safety', label: 'Exchange emergency contacts' },
+  { id: 'landlord', label: 'Get both names on the rental agreement' },
+  { id: 'agreement', label: 'Write down everything you agreed on' },
+];
 const EMPTY_LISTING = { title: '', city: '', rent: '', roomType: 'Private Room', description: '', amenities: [] };
 
 const card = 'p-4 rounded-lg bg-slate-800/60 backdrop-blur-sm border border-blue-400/20';
@@ -282,6 +295,17 @@ const UserDashboard = () => {
     }
   };
 
+  const toggleChecklistItem = async (itemId) => {
+    const current = !!profile?.checklist?.[itemId];
+    const updated = { ...(profile?.checklist || {}), [itemId]: !current };
+    setProfile((p) => ({ ...(p || {}), checklist: updated }));
+    try {
+      await setDoc(doc(db, 'users', user.uid), { checklist: updated }, { merge: true });
+    } catch {
+      toast.error('Could not save. Check your connection.');
+    }
+  };
+
   const resendVerification = async () => {
     try {
       await sendEmailVerification(auth.currentUser);
@@ -360,6 +384,7 @@ const UserDashboard = () => {
     { id: 'matches', label: 'Matches', icon: Users },
     { id: 'rooms', label: 'Rooms', icon: Home },
     { id: 'messages', label: 'Messages', icon: MessageCircle },
+    { id: 'checklist', label: 'Checklist', icon: ClipboardList },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -824,6 +849,64 @@ const UserDashboard = () => {
                   </div>
                 </div>
               )}
+
+              {/* ---------------- CHECKLIST ---------------- */}
+              {activeTab === 'checklist' && (() => {
+                const doneCount = CHECKLIST.filter((i) => profile?.checklist?.[i.id]).length;
+                const pct = Math.round((doneCount / CHECKLIST.length) * 100);
+                return (
+                  <div className="max-w-2xl mx-auto space-y-4">
+                    <div className={`${card} p-6`}>
+                      <h2 className="text-xl font-bold flex items-center mb-1">
+                        <ClipboardList className="w-5 h-5 mr-2" /> Roommate Agreement Checklist
+                      </h2>
+                      <p className="text-sm text-blue-200 mb-4">
+                        Things to sort out with your roommate before moving in together — tick them off as you go.
+                      </p>
+                      <div className="flex items-center gap-3 mb-5">
+                        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full transition-all"
+                            style={{ width: pct + '%' }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-blue-200 whitespace-nowrap">{doneCount}/{CHECKLIST.length} done</span>
+                      </div>
+                      <ul className="space-y-2">
+                        {CHECKLIST.map((item) => {
+                          const done = !!profile?.checklist?.[item.id];
+                          return (
+                            <li key={item.id}>
+                              <button
+                                onClick={() => toggleChecklistItem(item.id)}
+                                className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-lg border transition ${
+                                  done
+                                    ? 'bg-emerald-500/10 border-emerald-400/40'
+                                    : 'bg-slate-800/60 border-blue-400/20 hover:border-blue-400/50'
+                                }`}
+                              >
+                                <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                                  done ? 'bg-emerald-500 border-emerald-500' : 'border-blue-300'
+                                }`}>
+                                  {done && <CheckCircle className="w-4 h-4 text-white" />}
+                                </span>
+                                <span className={done ? 'line-through text-blue-200/70' : 'text-white'}>
+                                  {item.label}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                      {pct === 100 && (
+                        <p className="mt-4 text-center text-emerald-300 font-medium">
+                          🎉 All set! You're ready for harmonious co-living.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* ---------------- PROFILE ---------------- */}
               {activeTab === 'profile' && (
