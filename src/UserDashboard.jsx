@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Shield, CheckCircle, MapPin, Edit, User, Send, Heart, Home, Plus,
-  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles, MailWarning, ClipboardList
+  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles, MailWarning, ClipboardList,
+  Star, Calendar, FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -91,6 +92,8 @@ const personalityChips = (p) => {
   if (p.budget) chips.push(`💰 ₹${Number(p.budget).toLocaleString('en-IN')}/mo budget`);
   return chips;
 };
+
+const REVIEW_TAGS = ['Clean & tidy', 'Great communication', 'Friendly', 'Pays on time', 'Respects privacy'];
 
 const ICEBREAKERS = [
   "What does your ideal Sunday look like? ☀️",
@@ -187,6 +190,22 @@ const UserDashboard = () => {
   const [splitUtils, setSplitUtils] = useState('');
   const [splitPeople, setSplitPeople] = useState(2);
 
+  // visits
+  const [visits, setVisits] = useState([]);
+  const [showVisitForm, setShowVisitForm] = useState(false);
+  const [visitDraft, setVisitDraft] = useState({ date: '', time: '', note: '' });
+
+  // reviews (for the open match modal)
+  const [matchReviews, setMatchReviews] = useState([]);
+  const [showRateForm, setShowRateForm] = useState(false);
+  const [myStars, setMyStars] = useState(0);
+  const [myTags, setMyTags] = useState([]);
+
+  // agreement generator
+  const [agreement, setAgreement] = useState({
+    roommateName: '', rent: '', deposit: '', notice: '30 days', quietHours: '10 PM – 7 AM'
+  });
+
   const displayName = profile?.name || user?.displayName || user?.email?.split('@')[0] || 'there';
 
   // ---------- data loading ----------
@@ -226,6 +245,34 @@ const UserDashboard = () => {
     const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'), limit(100));
     return onSnapshot(q, (snap) => setListings(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
   }, [user]);
+
+  // live visits
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'visits'), where('participants', 'array-contains', user.uid));
+    return onSnapshot(q, (snap) => {
+      const list = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((v) => new Date(v.at) >= new Date(Date.now() - 24 * 60 * 60 * 1000))
+        .sort((a, b) => new Date(a.at) - new Date(b.at));
+      setVisits(list);
+    });
+  }, [user]);
+
+  // load reviews when a match profile opens
+  useEffect(() => {
+    if (!selectedMatch) { setMatchReviews([]); setShowRateForm(false); return; }
+    getDocs(query(collection(db, 'reviews'), where('revieweeId', '==', selectedMatch.id)))
+      .then((snap) => {
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setMatchReviews(list);
+        const mine = list.find((r) => r.reviewerId === user.uid);
+        setMyStars(mine?.stars || 0);
+        setMyTags(mine?.tags || []);
+      })
+      .catch(() => setMatchReviews([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMatch?.id]);
 
   // live chat list
   useEffect(() => {
@@ -435,6 +482,105 @@ const UserDashboard = () => {
     } catch {
       toast.error('Could not send email. Try again in a few minutes.');
     }
+  };
+
+  const scheduleVisit = async () => {
+    if (!visitDraft.date || !visitDraft.time) { toast.error('Pick a date and time.'); return; }
+    const chat = chats.find((c) => c.id === selectedChatId);
+    if (!chat) return;
+    try {
+      await addDoc(collection(db, 'visits'), {
+        participants: chat.participants,
+        names: chat.participantNames || {},
+        at: `${visitDraft.date}T${visitDraft.time}`,
+        note: visitDraft.note.trim(),
+        createdBy: user.uid,
+        createdAt: serverTimestamp(),
+      });
+      const when = new Date(`${visitDraft.date}T${visitDraft.time}`).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit'
+      });
+      await addDoc(collection(db, 'chats', selectedChatId, 'messages'), {
+        from: user.uid,
+        text: `📅 Room visit scheduled: ${when}${visitDraft.note ? ` — ${visitDraft.note.trim()}` : ''}`,
+        at: serverTimestamp(),
+      });
+      await updateDoc(doc(db, 'chats', selectedChatId), {
+        lastMsg: '📅 Room visit scheduled', lastMsgAt: serverTimestamp(), lastFrom: user.uid,
+      });
+      setShowVisitForm(false);
+      setVisitDraft({ date: '', time: '', note: '' });
+      toast.success('Visit scheduled! 📅');
+    } catch {
+      toast.error('Could not schedule the visit.');
+    }
+  };
+
+  const cancelVisit = async (visitId) => {
+    if (!window.confirm('Cancel this visit?')) return;
+    try { await deleteDoc(doc(db, 'visits', visitId)); toast.success('Visit cancelled.'); }
+    catch { toast.error('Could not cancel.'); }
+  };
+
+  const submitReview = async () => {
+    if (!myStars) { toast.error('Pick a star rating first.'); return; }
+    try {
+      await setDoc(doc(db, 'reviews', `${user.uid}_${selectedMatch.id}`), {
+        reviewerId: user.uid,
+        revieweeId: selectedMatch.id,
+        stars: myStars,
+        tags: myTags,
+        createdAt: serverTimestamp(),
+      });
+      setMatchReviews((prev) => [
+        ...prev.filter((r) => r.reviewerId !== user.uid),
+        { reviewerId: user.uid, revieweeId: selectedMatch.id, stars: myStars, tags: myTags },
+      ]);
+      setShowRateForm(false);
+      toast.success('Review saved! ⭐');
+    } catch {
+      toast.error('Could not save the review.');
+    }
+  };
+
+  const generateAgreement = () => {
+    if (!agreement.roommateName.trim() || !agreement.rent) {
+      toast.error('Roommate name and rent are required.');
+      return;
+    }
+    const myName = profile?.name || displayName;
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    const rent = Number(agreement.rent).toLocaleString('en-IN');
+    const half = Math.ceil(Number(agreement.rent) / 2).toLocaleString('en-IN');
+    const w = window.open('', '_blank');
+    if (!w) { toast.error('Please allow pop-ups to print the agreement.'); return; }
+    w.document.write(`<!doctype html><html><head><title>Roommate Agreement</title>
+      <style>
+        body { font-family: Georgia, serif; max-width: 720px; margin: 40px auto; color: #1a1a2e; line-height: 1.7; padding: 0 24px; }
+        h1 { text-align: center; border-bottom: 3px double #3949ab; padding-bottom: 12px; color: #283593; }
+        h2 { color: #3949ab; margin-top: 28px; font-size: 1.1rem; }
+        .sig { display: flex; justify-content: space-between; margin-top: 70px; }
+        .sig div { border-top: 1px solid #333; padding-top: 6px; width: 40%; text-align: center; }
+        .meta { text-align: center; color: #555; }
+        @media print { body { margin: 10mm; } }
+      </style></head><body>
+      <h1>Roommate Agreement</h1>
+      <p class="meta">Made on ${today} • Generated with Sakhi</p>
+      <p>This agreement is between <strong>${myName}</strong> and <strong>${agreement.roommateName.trim()}</strong>, who have agreed to live together as roommates on the following terms:</p>
+      <h2>1. Rent</h2>
+      <p>Total monthly rent is <strong>₹${rent}</strong>, split equally — <strong>₹${half} each</strong>, payable by the 5th of every month.</p>
+      ${agreement.deposit ? `<h2>2. Security Deposit</h2><p>The security deposit of <strong>₹${Number(agreement.deposit).toLocaleString('en-IN')}</strong> is shared equally and refundable on move-out per the landlord's terms.</p>` : ''}
+      <h2>${agreement.deposit ? 3 : 2}. Bills & Utilities</h2>
+      <p>Electricity, water, WiFi, and shared groceries are split equally. Records kept in a shared note or app.</p>
+      <h2>${agreement.deposit ? 4 : 3}. Cleaning</h2>
+      <p>Common areas are cleaned on an alternating weekly schedule. Each roommate keeps her own room tidy.</p>
+      <h2>${agreement.deposit ? 5 : 4}. Quiet Hours & Guests</h2>
+      <p>Quiet hours: <strong>${agreement.quietHours}</strong>. Overnight guests need advance notice to the other roommate.</p>
+      <h2>${agreement.deposit ? 6 : 5}. Notice Period</h2>
+      <p>Either roommate may move out with <strong>${agreement.notice}</strong> written notice, and will pay her share of rent for that period.</p>
+      <div class="sig"><div>${myName}</div><div>${agreement.roommateName.trim()}</div></div>
+      <script>window.print();</` + `script></body></html>`);
+    w.document.close();
   };
 
   const handlePasswordReset = async () => {
@@ -835,6 +981,33 @@ const UserDashboard = () => {
                           </button>
                         </div>
 
+                        {visits.length > 0 && (
+                          <div className={card}>
+                            <h2 className="text-lg font-semibold mb-2 flex items-center">
+                              <Calendar className="w-5 h-5 mr-2" /> Upcoming Visits
+                            </h2>
+                            <ul className="space-y-2">
+                              {visits.map((v) => {
+                                const otherUid = (v.participants || []).find((p) => p !== user.uid);
+                                return (
+                                  <li key={v.id} className="text-sm bg-white/5 rounded-lg px-3 py-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <span className="font-medium">{v.names?.[otherUid] || 'Roommate'}</span>
+                                      <button onClick={() => cancelVisit(v.id)} className="text-xs text-red-300 hover:underline">
+                                        Cancel
+                                      </button>
+                                    </div>
+                                    <div className="text-blue-200">
+                                      {new Date(v.at).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
+                                    </div>
+                                    {v.note && <div className="text-xs text-blue-200/80 mt-0.5">{v.note}</div>}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+
                         <div className={card}>
                           <h2 className="text-lg font-semibold mb-2 flex items-center">
                             <Shield className="w-5 h-5 mr-2" /> Safety First
@@ -1070,7 +1243,34 @@ const UserDashboard = () => {
                           <span className="font-semibold">
                             {otherNameOf(chats.find((c) => c.id === selectedChatId) || {})}
                           </span>
+                          <button
+                            onClick={() => setShowVisitForm((s) => !s)}
+                            className="ml-auto px-3 py-1.5 text-xs rounded-full bg-blue-500/30 hover:bg-blue-500/50 border border-blue-400/40 transition flex items-center gap-1.5"
+                          >
+                            <Calendar size={13} /> Schedule Visit
+                          </button>
                         </div>
+
+                        {showVisitForm && (
+                          <div className="mb-3 p-3 rounded-lg bg-blue-900/60 border border-blue-400/30">
+                            <div className="grid grid-cols-2 gap-2 mb-2">
+                              <input type="date" className={inputCls} value={visitDraft.date}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setVisitDraft({ ...visitDraft, date: e.target.value })} />
+                              <input type="time" className={inputCls} value={visitDraft.time}
+                                onChange={(e) => setVisitDraft({ ...visitDraft, time: e.target.value })} />
+                            </div>
+                            <input type="text" className={inputCls} placeholder="Note (e.g. address, landmark)…"
+                              value={visitDraft.note}
+                              onChange={(e) => setVisitDraft({ ...visitDraft, note: e.target.value })} />
+                            <button
+                              onClick={scheduleVisit}
+                              className="mt-2 px-4 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold"
+                            >
+                              Confirm Visit
+                            </button>
+                          </div>
+                        )}
                         <div className="flex-1 overflow-y-auto mb-4 pr-2">
                           {messages.length === 0 && (
                             <div className="text-center text-blue-200/70 text-sm pt-10">
@@ -1175,6 +1375,53 @@ const UserDashboard = () => {
                           🎉 All set! You're ready for harmonious co-living.
                         </p>
                       )}
+                    </div>
+
+                    {/* Agreement generator */}
+                    <div className={`${card} p-6`}>
+                      <h2 className="text-xl font-bold flex items-center mb-1">
+                        <FileText className="w-5 h-5 mr-2" /> Roommate Agreement Generator
+                      </h2>
+                      <p className="text-sm text-blue-200 mb-4">
+                        Fill in the details and get a print-ready agreement (save it as PDF from the print dialog).
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelCls}>Roommate's Name *</label>
+                          <input className={inputCls} value={agreement.roommateName}
+                            onChange={(e) => setAgreement({ ...agreement, roommateName: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Total Monthly Rent (₹) *</label>
+                          <input className={inputCls} type="number" min="0" value={agreement.rent}
+                            onChange={(e) => setAgreement({ ...agreement, rent: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Security Deposit (₹)</label>
+                          <input className={inputCls} type="number" min="0" value={agreement.deposit}
+                            onChange={(e) => setAgreement({ ...agreement, deposit: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Notice Period</label>
+                          <select className={inputCls} value={agreement.notice}
+                            onChange={(e) => setAgreement({ ...agreement, notice: e.target.value })}>
+                            <option>15 days</option>
+                            <option>30 days</option>
+                            <option>60 days</option>
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className={labelCls}>Quiet Hours</label>
+                          <input className={inputCls} value={agreement.quietHours}
+                            onChange={(e) => setAgreement({ ...agreement, quietHours: e.target.value })} />
+                        </div>
+                      </div>
+                      <button
+                        onClick={generateAgreement}
+                        className="mt-4 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold flex items-center gap-2"
+                      >
+                        <FileText size={16} /> Generate & Print
+                      </button>
                     </div>
                   </div>
                 );
@@ -1431,6 +1678,75 @@ const UserDashboard = () => {
               >
                 <Heart size={18} className={savedIds.includes(selectedMatch.id) ? 'fill-pink-400 text-pink-400' : 'text-blue-200'} />
               </button>
+            </div>
+
+            {/* Reviews */}
+            <div className="mt-4 pt-3 border-t border-blue-400/10">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wide">Reviews</h3>
+                <button
+                  onClick={() => setShowRateForm((s) => !s)}
+                  className="text-sm text-blue-300 hover:underline"
+                >
+                  {matchReviews.some((r) => r.reviewerId === user.uid) ? 'Edit your review' : 'Rate her'}
+                </button>
+              </div>
+              {matchReviews.length > 0 ? (
+                <div className="mb-2">
+                  <span className="text-amber-300 text-lg">
+                    {'★'.repeat(Math.round(matchReviews.reduce((s, r) => s + r.stars, 0) / matchReviews.length))}
+                  </span>
+                  <span className="text-sm text-blue-200 ml-2">
+                    {(matchReviews.reduce((s, r) => s + r.stars, 0) / matchReviews.length).toFixed(1)} · {matchReviews.length} review{matchReviews.length > 1 ? 's' : ''}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {REVIEW_TAGS.filter((t) => matchReviews.some((r) => r.tags?.includes(t))).map((t) => (
+                      <span key={t} className="px-2 py-0.5 bg-emerald-500/15 text-emerald-300 rounded-full text-xs">
+                        ✓ {t} · {matchReviews.filter((r) => r.tags?.includes(t)).length}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-blue-200/70 mb-2">No reviews yet.</p>
+              )}
+
+              {showRateForm && (
+                <div className="bg-white/5 rounded-lg p-3 mt-2">
+                  <div className="flex gap-1 mb-2">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button key={n} onClick={() => setMyStars(n)} title={`${n} star${n > 1 ? 's' : ''}`}>
+                        <Star
+                          size={22}
+                          className={n <= myStars ? 'fill-amber-400 text-amber-400' : 'text-blue-300/50'}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {REVIEW_TAGS.map((t) => {
+                      const on = myTags.includes(t);
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => setMyTags(on ? myTags.filter((x) => x !== t) : [...myTags, t])}
+                          className={`px-2.5 py-1 rounded-full text-xs border transition ${
+                            on ? 'bg-blue-500 border-blue-400 text-white' : 'border-blue-400/40 text-blue-200'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    onClick={submitReview}
+                    className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold"
+                  >
+                    Save Review
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-blue-400/10">
