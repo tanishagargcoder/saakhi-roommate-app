@@ -18,24 +18,92 @@ import { useAuth } from './AuthContext';
 
 // ---------- matching ----------
 const PREF_FIELDS = [
-  { key: 'sleep', label: 'Sleep Schedule', options: ['Early Bird', 'Flexible', 'Night Owl'], weight: 40 },
-  { key: 'cleanliness', label: 'Cleanliness', options: ['Very Tidy', 'Moderate', 'Relaxed'], weight: 30 },
-  { key: 'social', label: 'Social Energy', options: ['Homebody', 'Balanced', 'Social Butterfly'], weight: 30 },
+  { key: 'sleep', label: 'Sleep Schedule 🌙', options: ['Early Bird', 'Flexible', 'Night Owl'], weight: 15 },
+  { key: 'cleanliness', label: 'Cleanliness 🧹', options: ['Very Tidy', 'Moderate', 'Relaxed'], weight: 15 },
+  { key: 'social', label: 'Social Energy 🎉', options: ['Homebody', 'Balanced', 'Social Butterfly'], weight: 10 },
+  { key: 'food', label: 'Food Preference 🥗', options: ['Vegetarian', 'Eggetarian', 'Non-vegetarian'], weight: 15 },
+  { key: 'smoking', label: 'Smoking 🚭', options: ['Non-smoker', 'Okay around smokers', 'Smoker'], weight: 10 },
+  { key: 'guests', label: 'Guests 👥', options: ['Rarely', 'Sometimes', 'Often'], weight: 10 },
+  { key: 'noise', label: 'Noise Tolerance 🔇', options: ['Need silence', 'Moderate', "Don't mind noise"], weight: 10 },
+  { key: 'pets', label: 'Pets 🐾', options: ['Love pets', 'Okay with pets', 'No pets'], weight: 10 },
+  { key: 'wfh', label: 'Work Style 💻', options: ['Work from home', 'Hybrid', 'Office / College'], weight: 5 },
 ];
 
+// Score normalized over the questions BOTH people have answered,
+// so older/partial profiles still get a fair 0-100
 const scoreMatch = (mine, theirs) => {
   let score = 0;
+  let totalWeight = 0;
   for (const f of PREF_FIELDS) {
     const a = f.options.indexOf(mine?.[f.key]);
     const b = f.options.indexOf(theirs?.[f.key]);
     if (a === -1 || b === -1) continue;
+    totalWeight += f.weight;
     const dist = Math.abs(a - b);
     score += f.weight * (dist === 0 ? 1 : dist === 1 ? 0.5 : 0);
   }
-  return Math.round(score);
+  return totalWeight === 0 ? 0 : Math.round((score / totalWeight) * 100);
 };
 
-const hasPrefs = (p) => p && PREF_FIELDS.every((f) => f.options.includes(p.preferences?.[f.key]));
+const CORE_KEYS = ['sleep', 'cleanliness', 'social'];
+const hasPrefs = (p) =>
+  p && CORE_KEYS.every((k) => {
+    const f = PREF_FIELDS.find((x) => x.key === k);
+    return f.options.includes(p.preferences?.[k]);
+  });
+
+// "✔ Same sleep schedule / ⚠ Different guests preference" summary
+const explainMatch = (mine, theirs) => {
+  const positives = [];
+  const warnings = [];
+  for (const f of PREF_FIELDS) {
+    const a = f.options.indexOf(mine?.[f.key]);
+    const b = f.options.indexOf(theirs?.[f.key]);
+    if (a === -1 || b === -1) continue;
+    const plain = f.label.replace(/[^\w\s/]/g, '').trim().toLowerCase();
+    const d = Math.abs(a - b);
+    if (d === 0) positives.push(`Same ${plain}`);
+    else if (d === 1) positives.push(`Similar ${plain}`);
+    else warnings.push(`Different ${plain} — you: ${mine[f.key]}, her: ${theirs[f.key]}`);
+  }
+  return { positives, warnings };
+};
+
+// Personality chips derived from questionnaire answers
+const personalityChips = (p) => {
+  if (!p) return [];
+  const pr = p.preferences || {};
+  const maps = {
+    sleep: { 'Early Bird': '🌅 Early riser', 'Night Owl': '🌙 Night owl' },
+    cleanliness: { 'Very Tidy': '🧹 Organized', 'Relaxed': '🧘 Easy-going' },
+    social: { 'Homebody': '🏠 Homebody', 'Social Butterfly': '🎉 Social butterfly' },
+    food: { 'Vegetarian': '🥗 Vegetarian', 'Eggetarian': '🍳 Eggetarian', 'Non-vegetarian': '🍗 Non-vegetarian' },
+    smoking: { 'Non-smoker': '🚭 Non-smoker' },
+    noise: { 'Need silence': '🤫 Works quietly' },
+    pets: { 'Love pets': '🐾 Pet lover' },
+    wfh: { 'Work from home': '💻 Works from home' },
+  };
+  const chips = [];
+  for (const k of Object.keys(maps)) {
+    if (maps[k][pr[k]]) chips.push(maps[k][pr[k]]);
+  }
+  if (p.userType) chips.push(p.userType === 'Student' ? '🎓 Student' : '💼 Working');
+  if (p.budget) chips.push(`💰 ₹${Number(p.budget).toLocaleString('en-IN')}/mo budget`);
+  return chips;
+};
+
+const ICEBREAKERS = [
+  "What does your ideal Sunday look like? ☀️",
+  "Early bird or night owl — and how loud is your alarm? ⏰",
+  "What's your go-to comfort food? 🍜",
+  "Music while cooking: yes or no? 🎶",
+  "What's one house rule you can't live without?",
+  "Chai or coffee? This decides everything ☕",
+  "What show are you currently binge-watching? 📺",
+  "How do you feel about surprise guests?",
+  "What's your cleaning style — daily tidy or weekend deep-clean? 🧹",
+  "If we get a plant for the flat, who waters it? 🌱",
+];
 const chatIdFor = (a, b) => [a, b].sort().join('_');
 const initialOf = (name) => (name || '?').trim().charAt(0).toUpperCase();
 const sameCity = (a, b) => a && b && a.trim().toLowerCase() === b.trim().toLowerCase();
@@ -97,9 +165,13 @@ const UserDashboard = () => {
 
   // forms
   const [prefsDraft, setPrefsDraft] = useState({});
-  const [profileForm, setProfileForm] = useState({ name: '', age: '', occupation: '', location: '' });
+  const [profileForm, setProfileForm] = useState({
+    name: '', age: '', occupation: '', location: '', org: '', userType: '', budget: '', moveIn: ''
+  });
   const [saving, setSaving] = useState(false);
   const [cityFilter, setCityFilter] = useState('');
+  const [budgetMax, setBudgetMax] = useState('');
+  const [foodFilter, setFoodFilter] = useState('');
 
   // match interactions
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -109,6 +181,11 @@ const UserDashboard = () => {
   const [listings, setListings] = useState([]);
   const [showListingForm, setShowListingForm] = useState(false);
   const [listingForm, setListingForm] = useState(EMPTY_LISTING);
+
+  // rent split calculator
+  const [splitRent, setSplitRent] = useState('');
+  const [splitUtils, setSplitUtils] = useState('');
+  const [splitPeople, setSplitPeople] = useState(2);
 
   const displayName = profile?.name || user?.displayName || user?.email?.split('@')[0] || 'there';
 
@@ -123,6 +200,10 @@ const UserDashboard = () => {
       age: data?.age || '',
       occupation: data?.occupation || '',
       location: data?.location || '',
+      org: data?.org || '',
+      userType: data?.userType || '',
+      budget: data?.budget || '',
+      moveIn: data?.moveIn || '',
     });
   };
 
@@ -185,7 +266,7 @@ const UserDashboard = () => {
 
   const savePreferences = async () => {
     const missing = PREF_FIELDS.some((f) => !f.options.includes(prefsDraft?.[f.key]));
-    if (missing) { toast.error('Please answer all three questions.'); return; }
+    if (missing) { toast.error('Please answer all the questions.'); return; }
     setSaving(true);
     try {
       await setDoc(doc(db, 'users', user.uid), {
@@ -212,6 +293,10 @@ const UserDashboard = () => {
         age: profileForm.age,
         occupation: profileForm.occupation,
         location: profileForm.location,
+        org: profileForm.org,
+        userType: profileForm.userType,
+        budget: profileForm.budget,
+        moveIn: profileForm.moveIn,
         email: user.email,
         preferences: prefsDraft,
         updatedAt: serverTimestamp(),
@@ -392,7 +477,11 @@ const UserDashboard = () => {
     : [];
   const candidates = allCandidates
     .filter((u) => !cityFilter.trim() || (u.location || '').toLowerCase().includes(cityFilter.trim().toLowerCase()))
-    .filter((u) => !showSavedOnly || savedIds.includes(u.id));
+    .filter((u) => !showSavedOnly || savedIds.includes(u.id))
+    .filter((u) => !budgetMax || !u.budget || Number(u.budget) <= Number(budgetMax))
+    .filter((u) => !foodFilter || u.preferences?.food === foodFilter);
+
+  const bestMatches = allCandidates.slice(0, 3);
 
   const visibleChats = chats.filter(
     (c) => !(c.participants || []).some((p) => p !== user.uid && blockedIds.includes(p))
@@ -573,9 +662,33 @@ const UserDashboard = () => {
                           ))}
                         </div>
 
+                        {/* Today's Best Matches */}
+                        {bestMatches.length > 0 && (
+                          <div className={`${card} p-4`}>
+                            <h2 className="font-semibold mb-3 flex items-center gap-2">
+                              <Sparkles size={16} className="text-amber-300" /> Today's Best Matches
+                            </h2>
+                            <div className="flex gap-3 flex-wrap">
+                              {bestMatches.map((m) => (
+                                <button
+                                  key={m.id}
+                                  onClick={() => setSelectedMatch(m)}
+                                  className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-800/50 border border-blue-400/30 hover:border-blue-300 transition"
+                                >
+                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-xs font-bold">
+                                    {initialOf(m.name)}
+                                  </div>
+                                  <span className="text-sm font-medium">{m.name?.split(' ')[0]}</span>
+                                  <span className={`text-sm font-bold ${scoreColor(m.score)}`}>{m.score}%</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-center justify-between gap-3 flex-wrap">
                           <h2 className="text-xl font-semibold">Your Matches</h2>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <button
                               onClick={() => setShowSavedOnly((s) => !s)}
                               className={`px-3 py-1.5 rounded-lg text-sm border transition flex items-center gap-1.5 ${
@@ -588,11 +701,28 @@ const UserDashboard = () => {
                             </button>
                             <input
                               type="text"
-                              placeholder="Filter by city…"
+                              placeholder="City…"
                               value={cityFilter}
                               onChange={(e) => setCityFilter(e.target.value)}
-                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-40"
+                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-28"
                             />
+                            <input
+                              type="number"
+                              placeholder="Max ₹/mo"
+                              value={budgetMax}
+                              onChange={(e) => setBudgetMax(e.target.value)}
+                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-28"
+                            />
+                            <select
+                              value={foodFilter}
+                              onChange={(e) => setFoodFilter(e.target.value)}
+                              className="px-2 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400"
+                            >
+                              <option value="">Any food</option>
+                              <option>Vegetarian</option>
+                              <option>Eggetarian</option>
+                              <option>Non-vegetarian</option>
+                            </select>
                           </div>
                         </div>
                         {candidates.length === 0 ? (
@@ -693,7 +823,7 @@ const UserDashboard = () => {
                         <div className={card}>
                           <h2 className="text-lg font-semibold mb-2">Your Preferences</h2>
                           <ul className="text-sm space-y-1 text-blue-100">
-                            {PREF_FIELDS.map((f) => (
+                            {PREF_FIELDS.filter((f) => profile.preferences[f.key]).map((f) => (
                               <li key={f.key}>{f.label}: <span className="text-white">{profile.preferences[f.key]}</span></li>
                             ))}
                           </ul>
@@ -732,6 +862,39 @@ const UserDashboard = () => {
                     >
                       <Plus size={16} /> {showListingForm ? 'Cancel' : 'Post Your Room'}
                     </button>
+                  </div>
+
+                  {/* Rent split calculator */}
+                  <div className={`${card} p-4`}>
+                    <h3 className="font-semibold mb-3">💰 Rent Split Calculator</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className={labelCls}>Total Rent (₹)</label>
+                        <input className={inputCls} type="number" min="0" placeholder="15000"
+                          value={splitRent} onChange={(e) => setSplitRent(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Bills (₹)</label>
+                        <input className={inputCls} type="number" min="0" placeholder="2000"
+                          value={splitUtils} onChange={(e) => setSplitUtils(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Roommates</label>
+                        <select className={inputCls} value={splitPeople}
+                          onChange={(e) => setSplitPeople(Number(e.target.value))}>
+                          {[2, 3, 4, 5, 6].map((n) => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    {(Number(splitRent) > 0 || Number(splitUtils) > 0) && (
+                      <p className="mt-3 text-center text-lg">
+                        Each pays{' '}
+                        <span className="font-bold text-emerald-300">
+                          ₹{Math.ceil((Number(splitRent || 0) + Number(splitUtils || 0)) / splitPeople).toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-sm text-blue-200"> /month</span>
+                      </p>
+                    )}
                   </div>
 
                   {showListingForm && (
@@ -926,10 +1089,17 @@ const UserDashboard = () => {
                           <div ref={chatBottomRef} />
                         </div>
                         <div className="flex items-center">
+                          <button
+                            onClick={() => setTypedMsg(ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)])}
+                            title="Suggest an icebreaker question"
+                            className="px-3 py-2 rounded-l-lg bg-blue-950/80 border-r border-blue-400/20 text-amber-300 hover:text-amber-200"
+                          >
+                            <Sparkles size={18} />
+                          </button>
                           <input
                             type="text"
-                            className="w-full px-3 py-2 rounded-l-lg bg-blue-950/80 text-white focus:outline-none"
-                            placeholder="Type your message…"
+                            className="w-full px-3 py-2 bg-blue-950/80 text-white focus:outline-none"
+                            placeholder="Type your message… (✨ for an icebreaker)"
                             value={typedMsg}
                             onChange={(e) => setTypedMsg(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') sendMessage(); }}
@@ -1045,7 +1215,46 @@ const UserDashboard = () => {
                         <input className={inputCls} value={profileForm.location}
                           onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })} />
                       </div>
+                      <div>
+                        <label className={labelCls}>University / Company</label>
+                        <input className={inputCls} value={profileForm.org}
+                          onChange={(e) => setProfileForm({ ...profileForm, org: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={labelCls}>I am a…</label>
+                        <select className={inputCls} value={profileForm.userType}
+                          onChange={(e) => setProfileForm({ ...profileForm, userType: e.target.value })}>
+                          <option value="" disabled>Select…</option>
+                          <option>Student</option>
+                          <option>Working</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={labelCls}>Budget (₹/month)</label>
+                        <input className={inputCls} type="number" min="0" placeholder="e.g. 10000"
+                          value={profileForm.budget}
+                          onChange={(e) => setProfileForm({ ...profileForm, budget: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Move-in Date</label>
+                        <input className={inputCls} type="date" value={profileForm.moveIn}
+                          onChange={(e) => setProfileForm({ ...profileForm, moveIn: e.target.value })} />
+                      </div>
                     </div>
+
+                    {personalityChips(profile).length > 0 && (
+                      <>
+                        <h3 className="text-lg font-semibold mt-6 mb-2">Your Personality Snapshot</h3>
+                        <p className="text-xs text-blue-200 mb-2">Auto-generated from your answers — this is how matches see you.</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {personalityChips(profile).map((chip) => (
+                            <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-blue-100">
+                              {chip}
+                            </span>
+                          ))}
+                        </div>
+                      </>
+                    )}
 
                     <h3 className="text-lg font-semibold mt-6 mb-3">Lifestyle Preferences</h3>
                     <PreferencesFields value={prefsDraft} onChange={setPrefsDraft} />
@@ -1163,30 +1372,46 @@ const UserDashboard = () => {
               </span>
             </div>
 
+            {/* Personality summary */}
+            {personalityChips(selectedMatch).length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {personalityChips(selectedMatch).map((chip) => (
+                  <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-blue-100">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {selectedMatch.moveIn && (
+              <p className="text-sm text-blue-200 mb-4">
+                📅 Move-in: <span className="text-white font-medium">
+                  {new Date(selectedMatch.moveIn).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </span>
+              </p>
+            )}
+
+            {/* Why this score */}
             <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wide mb-2">
-              Lifestyle Compatibility
+              Why {selectedMatch.score}%?
             </h3>
-            <div className="space-y-2 mb-5">
-              {PREF_FIELDS.map((f) => {
-                const mine = profile?.preferences?.[f.key];
-                const hers = selectedMatch.preferences?.[f.key];
-                const exact = mine === hers;
-                const close = Math.abs(f.options.indexOf(mine) - f.options.indexOf(hers)) === 1;
+            <div className="bg-white/5 rounded-lg px-4 py-3 mb-5 space-y-1.5 text-sm">
+              {(() => {
+                const { positives, warnings } = explainMatch(profile?.preferences, selectedMatch.preferences);
                 return (
-                  <div key={f.key} className="bg-white/5 rounded-lg px-4 py-2.5">
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-blue-200">{f.label}</span>
-                      <span className={exact ? 'text-emerald-300' : close ? 'text-amber-300' : 'text-red-300'}>
-                        {exact ? '✓ Perfect match' : close ? '~ Close enough' : '✗ Different'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span>You: <span className="font-medium">{mine}</span></span>
-                      <span>Her: <span className="font-medium">{hers}</span></span>
-                    </div>
-                  </div>
+                  <>
+                    {positives.map((p) => (
+                      <p key={p} className="text-emerald-300">✔ {p}</p>
+                    ))}
+                    {warnings.map((w) => (
+                      <p key={w} className="text-amber-300">⚠ {w}</p>
+                    ))}
+                    {positives.length === 0 && warnings.length === 0 && (
+                      <p className="text-blue-200">She hasn't answered the lifestyle questions yet.</p>
+                    )}
+                  </>
                 );
-              })}
+              })()}
             </div>
 
             <div className="flex items-center gap-2">
