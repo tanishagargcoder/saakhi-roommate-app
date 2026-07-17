@@ -31,7 +31,7 @@ const VoiceAssistant = () => {
   return (
     <button
       onClick={() => setOpen((o) => !o)}
-      title={open ? 'Close assistant' : 'Sakhi Voice Assistant'}
+      title={open ? 'Close assistant' : 'Saakhi Voice Assistant'}
       aria-label={open ? 'Close voice assistant' : 'Open voice assistant'}
       style={{
         position: 'fixed',

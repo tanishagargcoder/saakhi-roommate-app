@@ -25,7 +25,7 @@ const AdminDashboard = () => {
         {/* Sidebar */}
         <div className="w-16 md:w-64 bg-[#283593]/70 backdrop-blur-md text-white">
           <div className="p-4 text-center">
-            <h1 className="text-xl font-bold hidden md:block">Sakhi Admin</h1>
+            <h1 className="text-xl font-bold hidden md:block">Saakhi Admin</h1>
             <div className="md:hidden mx-auto w-10 h-10 rounded-full bg-[#c5cae9] flex items-center justify-center text-[#3949ab] font-bold">
               S
             </div>

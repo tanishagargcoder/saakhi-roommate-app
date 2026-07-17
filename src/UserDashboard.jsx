@@ -565,7 +565,7 @@ const UserDashboard = () => {
         @media print { body { margin: 10mm; } }
       </style></head><body>
       <h1>Roommate Agreement</h1>
-      <p class="meta">Made on ${today} • Generated with Sakhi</p>
+      <p class="meta">Made on ${today} • Generated with Saakhi</p>
       <p>This agreement is between <strong>${myName}</strong> and <strong>${agreement.roommateName.trim()}</strong>, who have agreed to live together as roommates on the following terms:</p>
       <h2>1. Rent</h2>
       <p>Total monthly rent is <strong>₹${rent}</strong>, split equally — <strong>₹${half} each</strong>, payable by the 5th of every month.</p>
@@ -594,7 +594,7 @@ const UserDashboard = () => {
 
   const handleDeleteAccount = async () => {
     const sure = window.confirm(
-      'Delete your Sakhi account permanently? Your profile and matches will be removed. This cannot be undone.'
+      'Delete your Saakhi account permanently? Your profile and matches will be removed. This cannot be undone.'
     );
     if (!sure) return;
     try {
@@ -688,7 +688,7 @@ const UserDashboard = () => {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               <span className="text-2xl font-extrabold text-blue-400 tracking-tight drop-shadow-lg">
-                Sakhi
+                Saakhi
               </span>
 
               <div className="flex space-x-1 sm:space-x-2">
@@ -880,7 +880,7 @@ const UserDashboard = () => {
                             <p className="text-sm text-blue-200">
                               {cityFilter.trim()
                                 ? 'Try clearing the city filter to see all your matches.'
-                                : "Sakhi is growing! You'll see compatible roommates here as more women join and set their preferences."}
+                                : "Saakhi is growing! You'll see compatible roommates here as more women join and set their preferences."}
                             </p>
                           </div>
                         ) : (
@@ -896,7 +896,7 @@ const UserDashboard = () => {
                                     {initialOf(m.name)}
                                   </div>
                                   <div>
-                                    <h3 className="font-medium">{m.name || 'Sakhi member'}</h3>
+                                    <h3 className="font-medium">{m.name || 'Saakhi member'}</h3>
                                     <p className="text-sm text-gray-300 flex items-center gap-1 flex-wrap">
                                       {m.occupation && <span>{m.occupation}</span>}
                                       {m.location && (
@@ -1599,7 +1599,7 @@ const UserDashboard = () => {
                   {initialOf(selectedMatch.name)}
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">{selectedMatch.name || 'Sakhi member'}</h2>
+                  <h2 className="text-lg font-bold">{selectedMatch.name || 'Saakhi member'}</h2>
                   <p className="text-sm text-blue-200">
                     {[selectedMatch.age && `${selectedMatch.age} yrs`, selectedMatch.occupation]
                       .filter(Boolean).join(' • ')}

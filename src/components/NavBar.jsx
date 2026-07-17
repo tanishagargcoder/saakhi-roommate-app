@@ -33,7 +33,7 @@ const NavBar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-white">
-                <span className="text-[#c5cae9]">Sakhi</span>
+                <span className="text-[#c5cae9]">Saakhi</span>
               </span>
             </Link>
           </div>

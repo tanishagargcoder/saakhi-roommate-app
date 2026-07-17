@@ -16,10 +16,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h2 className="text-2xl font-bold mb-4">
-              <span className="text-[#c5cae9]">Sakhi</span>
+              <span className="text-[#c5cae9]">Saakhi</span>
             </h2>
             <p className="text-[#e8eaf6]">
-              Finding your perfect roommate has never been easier. Trust Sakhi for safe, compatible matches.
+              Finding your perfect roommate has never been easier. Trust Saakhi for safe, compatible matches.
             </p>
           </div>
 
@@ -82,7 +82,7 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-white/10 text-center">
           <p className="text-[#c5cae9]">
-            © {new Date().getFullYear()} Sakhi. All rights reserved. Created by Tanisha.
+            © {new Date().getFullYear()} Saakhi. All rights reserved. Created by Tanisha.
           </p>
         </div>
       </div>

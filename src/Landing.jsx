@@ -12,24 +12,24 @@ const fadeUp = {
 
 const FAQS = [
   {
-    q: 'Is Sakhi really women-only?',
-    a: 'Yes. Sakhi is built exclusively for women looking for female roommates, so you can search with confidence and peace of mind.'
+    q: 'Is Saakhi really women-only?',
+    a: 'Yes. Saakhi is built exclusively for women looking for female roommates, so you can search with confidence and peace of mind.'
   },
   {
-    q: 'Is Sakhi free to use?',
+    q: 'Is Saakhi free to use?',
     a: 'Completely free. Creating a profile, getting matched, and chatting with potential roommates costs nothing.'
   },
   {
     q: 'How does matching work?',
-    a: 'You answer three quick lifestyle questions — sleep schedule, cleanliness, and social energy. Sakhi compares your answers with other members and shows you a compatibility score for each one.'
+    a: 'You answer three quick lifestyle questions — sleep schedule, cleanliness, and social energy. Saakhi compares your answers with other members and shows you a compatibility score for each one.'
   },
   {
     q: 'Is my personal information safe?',
-    a: 'Your profile is visible only to signed-in Sakhi members, never publicly. Chats are private between you and your match, and we never share your email or details with anyone.'
+    a: 'Your profile is visible only to signed-in Saakhi members, never publicly. Chats are private between you and your match, and we never share your email or details with anyone.'
   },
   {
     q: 'How do I talk to a match?',
-    a: 'Every match card has a Message button — it opens a private real-time chat right inside Sakhi, so you never have to share your phone number until you are ready.'
+    a: 'Every match card has a Message button — it opens a private real-time chat right inside Saakhi, so you never have to share your phone number until you are ready.'
   }
 ];
 
@@ -63,7 +63,7 @@ const Landing = () => {
               </span>
             </h1>
             <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
-              Sakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
+              Saakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -101,7 +101,7 @@ const Landing = () => {
                 <span className="w-3 h-3 rounded-full bg-[#ffe082]"></span>
                 <span className="w-3 h-3 rounded-full bg-[#a5d6a7]"></span>
                 <div className="ml-4 flex-1 max-w-xs px-3 py-1 bg-white/10 rounded-full text-xs text-[#c5cae9] text-center">
-                  sakhi.app/matches
+                  saakhi.app/matches
                 </div>
               </div>
 
@@ -165,7 +165,7 @@ const Landing = () => {
           <div className="container mx-auto px-4">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Features</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Sakhi?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Saakhi?</h2>
               <p className="text-lg text-[#c5cae9] max-w-2xl mx-auto mt-3">
                 Everything you need to find a roommate you'll actually get along with
               </p>
@@ -271,13 +271,13 @@ const Landing = () => {
           <div className="container mx-auto px-4">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Our Story</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">About Sakhi</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">About Saakhi</h2>
             </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
                 <p className="text-lg text-[#e8eaf6] mb-6">
-                  Sakhi is India's first AI-powered roommate matching platform exclusively for women. 
+                  Saakhi is India's first AI-powered roommate matching platform exclusively for women. 
                   We understand the challenges women face in finding safe, compatible living arrangements.
                 </p>
                 <p className="text-lg text-[#e8eaf6] mb-6">
@@ -317,7 +317,7 @@ const Landing = () => {
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">FAQ</span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2>
-              <p className="text-lg text-[#c5cae9] mt-3">Everything you might be wondering about Sakhi</p>
+              <p className="text-lg text-[#c5cae9] mt-3">Everything you might be wondering about Saakhi</p>
             </motion.div>
 
             <div className="space-y-3">
@@ -350,7 +350,7 @@ const Landing = () => {
             >
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Roommate?</h2>
               <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
-                Join Sakhi today and start your journey to harmonious co-living.
+                Join Saakhi today and start your journey to harmonious co-living.
               </p>
               <button
                 onClick={() => navigate('/register')}

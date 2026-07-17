@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'Sakhi - Find Your Perfect Roommate',
-        short_name: 'Sakhi',
+        name: 'Saakhi - Find Your Perfect Roommate',
+        short_name: 'Saakhi',
         description: "India's women-only roommate finder — safe, compatible matches with real-time chat.",
         theme_color: '#3949ab',
         background_color: '#283593',

@@ -156,7 +156,7 @@ const Login = ({ startInSignup = false }) => {
         // Fire-and-forget verification email; signup shouldn't block on it
         sendEmailVerification(newUser).catch(() => {});
 
-        showToast("Welcome to Sakhi! 🎉 We've sent you a verification email.", "success");
+        showToast("Welcome to Saakhi! 🎉 We've sent you a verification email.", "success");
         navigate('/dashboard');
       } catch (err) {
         showToast(friendlyError(err), "error");
@@ -236,7 +236,7 @@ const Login = ({ startInSignup = false }) => {
         </button>
         <div style={styles.brandSection}>
           <HomeSVG />
-          <h1 style={styles.brandTitle}>Sakhi</h1>
+          <h1 style={styles.brandTitle}>Saakhi</h1>
           <p style={styles.brandSubtitle}>Find Your Perfect Female Roommate</p>
         </div>
         
