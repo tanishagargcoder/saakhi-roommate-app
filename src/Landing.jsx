@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { NavBar, Footer } from './components';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-60px' },
+  transition: { duration: 0.55, ease: 'easeOut' },
+};
 
 const FAQS = [
   {
@@ -35,13 +43,24 @@ const Landing = () => {
       
       <main>
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-16 flex flex-col items-center">
-          <div className="text-center max-w-4xl mx-auto mb-12">
+        <section className="relative overflow-hidden container mx-auto px-4 py-16 flex flex-col items-center">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#7986cb]/30 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-48 -right-24 w-96 h-96 bg-[#c5cae9]/20 rounded-full blur-3xl pointer-events-none"></div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="relative text-center max-w-4xl mx-auto mb-12"
+          >
             <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#e8eaf6] text-sm font-medium mb-6">
               🏠 India's women-only roommate finder
             </span>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Find Your Perfect <span className="text-[#c5cae9]">Roommate</span>
+              Find Your Perfect{' '}
+              <span className="bg-gradient-to-r from-[#c5cae9] to-[#9fa8da] bg-clip-text text-transparent">
+                Roommate
+              </span>
             </h1>
             <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
               Sakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
@@ -67,9 +86,14 @@ const Landing = () => {
               <span>👩 Women-only community</span>
               <span>🔒 Privacy first</span>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="w-full max-w-4xl animate-float">
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
+            className="relative w-full max-w-4xl animate-float"
+          >
             <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
               {/* Mock browser bar */}
               <div className="flex items-center gap-2 px-4 py-3 bg-white/10 border-b border-white/10">
@@ -119,7 +143,7 @@ const Landing = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* Highlights strip */}
@@ -160,14 +184,18 @@ const Landing = () => {
                   description: "Connect and coordinate with potential roommates in real-time."
                 }
               ].map((feature, index) => (
-                <div 
+                <motion.div
                   key={index}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: index * 0.1 }}
                   className="sakhi-card p-6 text-center"
                 >
-                  <div className="text-3xl mb-4">{feature.icon}</div>
+                  <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] flex items-center justify-center text-2xl mb-4 shadow-lg">
+                    {feature.icon}
+                  </div>
                   <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
                   <p className="text-[#e8eaf6]">{feature.description}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -302,18 +330,24 @@ const Landing = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-[#283593]">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold text-white mb-6">Ready to Find Your Perfect Roommate?</h2>
-            <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
-              Join Sakhi today and start your journey to harmonious co-living.
-            </p>
-            <button 
-              onClick={() => navigate('/register')}
-              className="sakhi-button-primary text-lg px-8 py-3"
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <motion.div
+              {...fadeUp}
+              className="max-w-4xl mx-auto text-center rounded-3xl bg-gradient-to-br from-[#283593] to-[#3949ab] border border-[#7986cb]/40 px-6 py-14 shadow-2xl"
             >
-              Get Started Now
-            </button>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Roommate?</h2>
+              <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
+                Join Sakhi today and start your journey to harmonious co-living.
+              </p>
+              <button
+                onClick={() => navigate('/register')}
+                className="sakhi-button-primary text-lg px-8 py-3"
+              >
+                Get Started Now
+              </button>
+              <p className="text-sm text-[#c5cae9] mt-4">Free forever · No credit card needed</p>
+            </motion.div>
           </div>
         </section>
       </main>

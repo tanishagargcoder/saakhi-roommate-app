@@ -7,7 +7,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
@@ -152,7 +153,10 @@ const Login = ({ startInSignup = false }) => {
           createdAt: serverTimestamp()
         });
 
-        showToast("Welcome to Sakhi! 🎉", "success");
+        // Fire-and-forget verification email; signup shouldn't block on it
+        sendEmailVerification(newUser).catch(() => {});
+
+        showToast("Welcome to Sakhi! 🎉 We've sent you a verification email.", "success");
         navigate('/dashboard');
       } catch (err) {
         showToast(friendlyError(err), "error");

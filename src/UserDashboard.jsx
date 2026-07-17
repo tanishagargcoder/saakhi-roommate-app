@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Shield, CheckCircle, MapPin, Edit, User, Send, Heart,
-  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles
+  Shield, CheckCircle, MapPin, Edit, User, Send, Heart, Home, Plus,
+  Settings, MessageCircle, Users, LogOut, Trash2, KeyRound, Sparkles, MailWarning
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
-  signOut, updateProfile, sendPasswordResetEmail, deleteUser
+  signOut, updateProfile, sendPasswordResetEmail, deleteUser, sendEmailVerification
 } from 'firebase/auth';
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection,
@@ -39,6 +39,9 @@ const hasPrefs = (p) => p && PREF_FIELDS.every((f) => f.options.includes(p.prefe
 const chatIdFor = (a, b) => [a, b].sort().join('_');
 const initialOf = (name) => (name || '?').trim().charAt(0).toUpperCase();
 const sameCity = (a, b) => a && b && a.trim().toLowerCase() === b.trim().toLowerCase();
+
+const AMENITIES = ['WiFi', 'AC', 'Furnished', 'Attached Bathroom', 'Kitchen Access', 'Parking'];
+const EMPTY_LISTING = { title: '', city: '', rent: '', roomType: 'Private Room', description: '', amenities: [] };
 
 const card = 'p-4 rounded-lg bg-slate-800/60 backdrop-blur-sm border border-blue-400/20';
 const inputCls = 'w-full px-3 py-2 rounded-lg bg-slate-800 border border-blue-400/30 text-white focus:outline-none focus:border-blue-400';
@@ -85,6 +88,11 @@ const UserDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [cityFilter, setCityFilter] = useState('');
 
+  // room listings
+  const [listings, setListings] = useState([]);
+  const [showListingForm, setShowListingForm] = useState(false);
+  const [listingForm, setListingForm] = useState(EMPTY_LISTING);
+
   const displayName = profile?.name || user?.displayName || user?.email?.split('@')[0] || 'there';
 
   // ---------- data loading ----------
@@ -112,6 +120,13 @@ const UserDashboard = () => {
       .catch(() => toast.error('Could not load your data. Please refresh.'))
       .finally(() => setProfileLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // live room listings
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'), limit(100));
+    return onSnapshot(q, (snap) => setListings(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
   }, [user]);
 
   // live chat list
@@ -231,6 +246,51 @@ const UserDashboard = () => {
     }
   };
 
+  const saveListing = async () => {
+    if (!listingForm.title.trim() || !listingForm.city.trim() || !listingForm.rent) {
+      toast.error('Title, city and rent are required.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await addDoc(collection(db, 'listings'), {
+        ...listingForm,
+        title: listingForm.title.trim(),
+        city: listingForm.city.trim(),
+        rent: Number(listingForm.rent),
+        ownerId: user.uid,
+        ownerName: profile?.name || displayName,
+        createdAt: serverTimestamp(),
+      });
+      setListingForm(EMPTY_LISTING);
+      setShowListingForm(false);
+      toast.success('Room posted! 🏠');
+    } catch {
+      toast.error('Could not post the room. Try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteListing = async (listingId) => {
+    if (!window.confirm('Remove this room listing?')) return;
+    try {
+      await deleteDoc(doc(db, 'listings', listingId));
+      toast.success('Listing removed.');
+    } catch {
+      toast.error('Could not remove listing.');
+    }
+  };
+
+  const resendVerification = async () => {
+    try {
+      await sendEmailVerification(auth.currentUser);
+      toast.success('Verification email sent — check your inbox!');
+    } catch {
+      toast.error('Could not send email. Try again in a few minutes.');
+    }
+  };
+
   const handlePasswordReset = async () => {
     try {
       await sendPasswordResetEmail(auth, user.email);
@@ -298,6 +358,7 @@ const UserDashboard = () => {
 
   const tabs = [
     { id: 'matches', label: 'Matches', icon: Users },
+    { id: 'rooms', label: 'Rooms', icon: Home },
     { id: 'messages', label: 'Messages', icon: MessageCircle },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -359,6 +420,21 @@ const UserDashboard = () => {
         </motion.nav>
 
         <div className="pt-24">
+          {user && !user.emailVerified && (
+            <div className="mb-6 flex items-center gap-3 flex-wrap bg-amber-500/15 border border-amber-400/40 rounded-lg px-4 py-3 text-sm">
+              <MailWarning className="w-5 h-5 text-amber-300 flex-shrink-0" />
+              <span className="text-amber-100 flex-1">
+                Please verify your email address to keep your account secure.
+              </span>
+              <button
+                onClick={resendVerification}
+                className="px-3 py-1.5 bg-amber-500/80 hover:bg-amber-500 rounded font-semibold text-amber-950"
+              >
+                Resend Email
+              </button>
+            </div>
+          )}
+
           {profileLoading ? (
             <div className="flex justify-center pt-20">
               <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -514,6 +590,153 @@ const UserDashboard = () => {
                         </div>
                       </div>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* ---------------- ROOMS ---------------- */}
+              {activeTab === 'rooms' && (
+                <div className="max-w-4xl mx-auto space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <h2 className="text-xl font-semibold">Rooms Available</h2>
+                    <button
+                      onClick={() => setShowListingForm((s) => !s)}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold flex items-center gap-1.5"
+                    >
+                      <Plus size={16} /> {showListingForm ? 'Cancel' : 'Post Your Room'}
+                    </button>
+                  </div>
+
+                  {showListingForm && (
+                    <div className={`${card} p-5`}>
+                      <h3 className="font-semibold mb-4">Post a room for rent</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="sm:col-span-2">
+                          <label className={labelCls}>Title *</label>
+                          <input className={inputCls} placeholder="e.g. Sunny room in 2BHK near metro"
+                            value={listingForm.title}
+                            onChange={(e) => setListingForm({ ...listingForm, title: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>City *</label>
+                          <input className={inputCls} placeholder="e.g. Noida"
+                            value={listingForm.city}
+                            onChange={(e) => setListingForm({ ...listingForm, city: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Rent (₹/month) *</label>
+                          <input className={inputCls} type="number" min="0" placeholder="e.g. 8000"
+                            value={listingForm.rent}
+                            onChange={(e) => setListingForm({ ...listingForm, rent: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Room Type</label>
+                          <select className={inputCls} value={listingForm.roomType}
+                            onChange={(e) => setListingForm({ ...listingForm, roomType: e.target.value })}>
+                            <option>Private Room</option>
+                            <option>Shared Room</option>
+                            <option>Entire Flat</option>
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className={labelCls}>Description</label>
+                          <textarea className={`${inputCls} min-h-[70px]`} placeholder="Nearby landmarks, house rules, flatmates…"
+                            value={listingForm.description}
+                            onChange={(e) => setListingForm({ ...listingForm, description: e.target.value })} />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className={labelCls}>Amenities</label>
+                          <div className="flex flex-wrap gap-2">
+                            {AMENITIES.map((a) => {
+                              const on = listingForm.amenities.includes(a);
+                              return (
+                                <button key={a} type="button"
+                                  onClick={() => setListingForm({
+                                    ...listingForm,
+                                    amenities: on
+                                      ? listingForm.amenities.filter((x) => x !== a)
+                                      : [...listingForm.amenities, a],
+                                  })}
+                                  className={`px-3 py-1 rounded-full text-xs border transition ${
+                                    on
+                                      ? 'bg-blue-500 border-blue-400 text-white'
+                                      : 'bg-transparent border-blue-400/40 text-blue-200 hover:border-blue-400'
+                                  }`}
+                                >
+                                  {a}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={saveListing}
+                        disabled={saving}
+                        className="mt-4 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold disabled:opacity-60"
+                      >
+                        {saving ? 'Posting…' : 'Post Room'}
+                      </button>
+                    </div>
+                  )}
+
+                  {listings.length === 0 ? (
+                    <div className={`${card} p-8 text-center`}>
+                      <Home className="w-8 h-8 text-blue-300 mx-auto mb-3" />
+                      <p className="font-medium mb-1">No rooms posted yet</p>
+                      <p className="text-sm text-blue-200">
+                        Have a spare room? Be the first to post it and find your roommate!
+                      </p>
+                    </div>
+                  ) : (
+                    listings.map((l) => (
+                      <div key={l.id} className={`${card} hover:border-blue-400/40 transition`}>
+                        <div className="flex justify-between items-start gap-3 flex-wrap">
+                          <div className="min-w-0">
+                            <h3 className="font-semibold text-lg">{l.title}</h3>
+                            <p className="text-sm text-gray-300 flex items-center gap-2 flex-wrap mt-0.5">
+                              <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" />{l.city}</span>
+                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-xs">{l.roomType}</span>
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-blue-400">₹{Number(l.rent).toLocaleString('en-IN')}</p>
+                            <p className="text-xs text-blue-200">per month</p>
+                          </div>
+                        </div>
+                        {l.description && <p className="text-sm text-blue-100 mt-2">{l.description}</p>}
+                        {l.amenities?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {l.amenities.map((a) => (
+                              <span key={a} className="px-2 py-0.5 bg-white/10 rounded-full text-xs text-blue-200">✓ {a}</span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-blue-400/10">
+                          <div className="flex items-center gap-2 text-sm text-blue-200">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                              {initialOf(l.ownerName)}
+                            </div>
+                            {l.ownerId === user.uid ? 'Posted by you' : l.ownerName}
+                          </div>
+                          {l.ownerId === user.uid ? (
+                            <button
+                              onClick={() => deleteListing(l.id)}
+                              className="px-3 py-1.5 text-sm rounded-full bg-red-500/20 text-red-300 hover:bg-red-500/40 transition flex items-center gap-1"
+                            >
+                              <Trash2 size={13} /> Remove
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => openChatWith({ id: l.ownerId, name: l.ownerName })}
+                              className="px-4 py-1.5 text-sm rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium flex items-center gap-1.5"
+                            >
+                              <MessageCircle size={14} /> Message
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
               )}
