@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Landing from './Landing';
 import Login from './Login';
 import UserDashboard from './UserDashboard';
@@ -14,7 +14,7 @@ import VoiceAssistant from './components/voiceassistant';
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <div className="App">
           <Routes>
             {/* Landing page */}
@@ -52,7 +52,7 @@ function App() {
           <ToastContainer />
           <VoiceAssistant />
         </div>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
