@@ -167,6 +167,36 @@ export const RevealWords = ({ text, className = '', delay = 0 }) => (
   </span>
 );
 
+/* Circular progress ring — used for compatibility scores and profile completeness */
+export const ScoreRing = ({ value = 0, size = 56, stroke = 5, label, className = '' }) => {
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const color = value >= 75 ? '#34d399' : value >= 50 ? '#60a5fa' : '#94a3b8';
+
+  return (
+    <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2} cy={size / 2} r={radius}
+          fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth={stroke}
+        />
+        <motion.circle
+          cx={size / 2} cy={size / 2} r={radius}
+          fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: circumference - (value / 100) * circumference }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+        <span className="font-bold" style={{ color, fontSize: size * 0.28 }}>{value}%</span>
+        {label && <span className="text-[9px] text-blue-200 mt-0.5">{label}</span>}
+      </span>
+    </div>
+  );
+};
+
 /* Word that swaps every couple of seconds */
 export const RotatingWord = ({ words, className = '' }) => {
   const [i, setI] = useState(0);

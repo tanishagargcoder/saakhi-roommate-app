@@ -142,6 +142,51 @@ body {
   }
 }
 
+/* Glass card with a gradient hairline border */
+.glass-card {
+  position: relative;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04));
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 34px -18px rgba(0, 0, 0, 0.75);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card:hover {
+  border-color: rgba(197, 202, 233, 0.4);
+  box-shadow: 0 22px 50px -22px rgba(96, 125, 255, 0.6);
+}
+
+/* Accent line that lights up along the top edge of a card */
+.accent-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #90caf9, #c5cae9, transparent);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.accent-top:hover::before { opacity: 1; }
+
+/* Skeleton block for loading states */
+.skeleton-block {
+  background: linear-gradient(90deg, rgba(255,255,255,0.07) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.07) 75%);
+  background-size: 200% 100%;
+  animation: bar-shimmer 1.8s linear infinite;
+  border-radius: 12px;
+}
+
+/* Gentle bob for empty-state icons */
+@keyframes soft-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.soft-bob { animation: soft-bob 3.5s ease-in-out infinite; }
+
 /* Subtle dot-grid texture for section backgrounds */
 .bg-dots {
   background-image: radial-gradient(rgba(197, 202, 233, 0.14) 1px, transparent 1px);

@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { useAuth } from './AuthContext';
+import { ScoreRing } from './components';
 
 // ---------- matching ----------
 const PREF_FIELDS = [
@@ -127,8 +128,8 @@ const CHECKLIST = [
 ];
 const EMPTY_LISTING = { title: '', city: '', rent: '', roomType: 'Private Room', description: '', amenities: [] };
 
-const card = 'p-4 rounded-xl bg-blue-900/50 backdrop-blur-sm border border-blue-400/20 transition-colors';
-const inputCls = 'w-full px-3 py-2 rounded-lg bg-blue-950/80 border border-blue-400/30 text-white focus:outline-none focus:border-blue-400';
+const card = 'glass-card p-4';
+const inputCls = 'w-full px-3 py-2 rounded-lg bg-blue-950/70 border border-white/15 text-white placeholder-blue-300/50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-400/30 transition';
 const labelCls = 'block text-sm text-blue-200 mb-1';
 
 // ---------- preferences form (shared by onboarding + profile) ----------
@@ -755,18 +756,54 @@ const UserDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-6"
+            transition={{ duration: 0.45 }}
+            className="glass-card accent-top relative overflow-hidden p-5 md:p-6 mb-6"
           >
-            <h1 className="text-2xl md:text-3xl font-bold">
-              {greeting}, <span className="bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">{displayName}</span> 👋
-            </h1>
-            <p className="text-blue-200 text-sm mt-1">Let's find you the perfect roommate.</p>
+            <div className="absolute -top-16 -right-10 w-56 h-56 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="relative flex items-center gap-4 flex-wrap">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-900/40">
+                {initialOf(displayName)}
+              </div>
+              <div className="flex-1 min-w-[200px]">
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight">
+                  {greeting}, <span className="text-gradient-animated">{displayName}</span> 👋
+                </h1>
+                <p className="text-blue-200 text-sm mt-1">
+                  {!profileLoading && iHavePrefs
+                    ? allCandidates.length > 0
+                      ? `You have ${allCandidates.length} compatible ${allCandidates.length === 1 ? 'match' : 'matches'} waiting.`
+                      : "Your profile is live — new matches will appear here as women join."
+                    : "Let's find you the perfect roommate."}
+                </p>
+              </div>
+              {!profileLoading && (
+                <div className="flex items-center gap-4">
+                  <ScoreRing value={completeness} size={62} label="profile" />
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={() => setActiveTab('messages')}
+                      className="px-3 py-2 rounded-xl bg-blue-500/25 border border-blue-400/40 text-sm hover:bg-blue-500/40 transition"
+                    >
+                      💬 {unreadCount} new
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </motion.div>
 
           {profileLoading ? (
-            <div className="flex justify-center pt-20">
-              <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  {[0, 1, 2].map((i) => <div key={i} className="skeleton-block h-16"></div>)}
+                </div>
+                {[0, 1, 2].map((i) => <div key={i} className="skeleton-block h-28"></div>)}
+              </div>
+              <div className="space-y-4">
+                <div className="skeleton-block h-36"></div>
+                <div className="skeleton-block h-28"></div>
+              </div>
             </div>
           ) : (
             <>
@@ -886,8 +923,8 @@ const UserDashboard = () => {
                           </div>
                         </div>
                         {candidates.length === 0 ? (
-                          <div className={`${card} p-8 text-center`}>
-                            <Heart className="w-8 h-8 text-blue-300 mx-auto mb-3" />
+                          <div className={`${card} p-10 text-center`}>
+                            <Heart className="w-12 h-12 text-blue-300 mx-auto mb-4 soft-bob" />
                             <p className="font-medium mb-1">
                               {cityFilter.trim() ? `No matches in "${cityFilter.trim()}"` : 'No matches yet'}
                             </p>
@@ -905,20 +942,27 @@ const UserDashboard = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.35, delay: Math.min(idx * 0.06, 0.4) }}
                               whileHover={{ y: -4 }}
-                              className={`${card} shine-card hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-500/10`}
+                              className={`${card} accent-top shine-card`}
                             >
                               <div
                                 className="flex justify-between items-center gap-3 flex-wrap cursor-pointer"
                                 onClick={() => setSelectedMatch(m)}
                                 title="View profile"
                               >
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-lg font-bold">
-                                    {initialOf(m.name)}
+                                <div className="flex items-center gap-3">
+                                  <div className="relative">
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/40">
+                                      {initialOf(m.name)}
+                                    </div>
+                                    {m.score >= 75 && (
+                                      <span className="absolute -top-1.5 -right-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400 text-emerald-950 font-bold shadow">
+                                        TOP
+                                      </span>
+                                    )}
                                   </div>
                                   <div>
-                                    <h3 className="font-medium">{m.name || 'Saakhi member'}</h3>
-                                    <p className="text-sm text-gray-300 flex items-center gap-1 flex-wrap">
+                                    <h3 className="font-semibold text-lg leading-tight">{m.name || 'Saakhi member'}</h3>
+                                    <p className="text-sm text-blue-200 flex items-center gap-2 flex-wrap mt-0.5">
                                       {m.occupation && <span>{m.occupation}</span>}
                                       {m.location && (
                                         <span className="flex items-center">
@@ -926,16 +970,21 @@ const UserDashboard = () => {
                                         </span>
                                       )}
                                     </p>
+                                    <div className="flex flex-wrap gap-1.5 mt-2">
+                                      {sameCity(m.location, profile?.location) && (
+                                        <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">
+                                          📍 Same city
+                                        </span>
+                                      )}
+                                      {personalityChips(m).slice(0, 2).map((chip) => (
+                                        <span key={chip} className="text-xs px-2 py-0.5 bg-white/10 text-blue-100 rounded-full">
+                                          {chip}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="text-right">
-                                  <p className={`text-lg font-bold ${scoreColor(m.score)}`}>{m.score}% Match</p>
-                                  {sameCity(m.location, profile?.location) && (
-                                    <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">
-                                      Same city
-                                    </span>
-                                  )}
-                                </div>
+                                <ScoreRing value={m.score} size={64} label="match" />
                               </div>
                               <div className="flex items-center gap-2 mt-3">
                                 <button
@@ -1165,8 +1214,8 @@ const UserDashboard = () => {
                   )}
 
                   {listings.length === 0 ? (
-                    <div className={`${card} p-8 text-center`}>
-                      <Home className="w-8 h-8 text-blue-300 mx-auto mb-3" />
+                    <div className={`${card} p-10 text-center`}>
+                      <Home className="w-12 h-12 text-blue-300 mx-auto mb-4 soft-bob" />
                       <p className="font-medium mb-1">No rooms posted yet</p>
                       <p className="text-sm text-blue-200">
                         Have a spare room? Be the first to post it and find your roommate!
@@ -1228,7 +1277,7 @@ const UserDashboard = () => {
               {/* ---------------- MESSAGES ---------------- */}
               {activeTab === 'messages' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="md:col-span-1 bg-blue-950/60 p-4 rounded-lg max-h-[530px] overflow-y-auto">
+                  <div className="md:col-span-1 glass-card p-4 max-h-[530px] overflow-y-auto">
                     {visibleChats.length === 0 ? (
                       <div className="text-center py-10 text-blue-200 text-sm">
                         <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-60" />
@@ -1256,7 +1305,7 @@ const UserDashboard = () => {
                     )}
                   </div>
 
-                  <div className="md:col-span-2 bg-blue-950/60 p-4 rounded-lg flex flex-col h-[500px]">
+                  <div className="md:col-span-2 glass-card p-4 flex flex-col h-[500px]">
                     {selectedChatId ? (
                       <>
                         <div className="flex items-center mb-3 pb-3 border-b border-blue-400/20">
@@ -1612,15 +1661,17 @@ const UserDashboard = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl bg-blue-900 border border-blue-400/40 shadow-2xl p-6 max-h-[85vh] overflow-y-auto"
+            className="w-full max-w-md rounded-2xl bg-blue-900 border border-blue-400/40 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xl font-bold">
-                  {initialOf(selectedMatch.name)}
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold">{selectedMatch.name || 'Saakhi member'}</h2>
+            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/40 to-indigo-700/40 px-6 pt-6 pb-5 border-b border-white/10">
+              <div className="absolute -top-12 -right-8 w-40 h-40 bg-blue-400/25 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="relative flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-950/50">
+                    {initialOf(selectedMatch.name)}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">{selectedMatch.name || 'Saakhi member'}</h2>
                   <p className="text-sm text-blue-200">
                     {[selectedMatch.age && `${selectedMatch.age} yrs`, selectedMatch.occupation]
                       .filter(Boolean).join(' • ')}
@@ -1635,11 +1686,11 @@ const UserDashboard = () => {
                   )}
                 </div>
               </div>
-              <span className={`text-xl font-bold ${scoreColor(selectedMatch.score)}`}>
-                {selectedMatch.score}%
-              </span>
+                <ScoreRing value={selectedMatch.score} size={68} label="match" />
+              </div>
             </div>
 
+            <div className="p-6">
             {/* Personality summary */}
             {personalityChips(selectedMatch).length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-4">
@@ -1780,6 +1831,7 @@ const UserDashboard = () => {
               <button onClick={() => setSelectedMatch(null)} className="text-sm text-blue-300 hover:underline">
                 Close
               </button>
+            </div>
             </div>
           </motion.div>
         </div>
