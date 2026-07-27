@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { NavBar, Footer } from './components';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  NavBar, Footer, ScrollProgress, CursorGlow, TiltCard, MagneticButton, CountUp, RevealWords, RotatingWord
+} from './components';
+
+const MARQUEE_ITEMS = [
+  '🛡️ Verified profiles', '🌙 Sleep schedule match', '🧹 Cleanliness match', '🥗 Food preference',
+  '💬 Real-time chat', '🏠 Room listings', '💰 Rent split calculator', '📅 Visit scheduling',
+  '⭐ Roommate reviews', '📄 Agreement generator', '🚭 Smoking preference', '🐾 Pet friendly',
+];
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -38,61 +46,96 @@ const Landing = () => {
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#283593] via-[#3949ab] to-[#5c6bc0] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#283593] via-[#3949ab] to-[#5c6bc0] text-white overflow-x-hidden">
+      <ScrollProgress />
       <NavBar />
-      
+
       <main>
         {/* Hero Section */}
         <section className="relative overflow-hidden container mx-auto px-4 py-16 flex flex-col items-center">
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#7986cb]/30 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute top-48 -right-24 w-96 h-96 bg-[#c5cae9]/20 rounded-full blur-3xl pointer-events-none"></div>
+          <CursorGlow />
+          <div className="aurora -top-32 -left-32 w-[420px] h-[420px] bg-[#7986cb]/40 pointer-events-none"></div>
+          <div className="aurora top-40 -right-24 w-[380px] h-[380px] bg-[#c5cae9]/25 pointer-events-none" style={{ animationDelay: '-7s' }}></div>
+          <div className="aurora bottom-0 left-1/3 w-[340px] h-[340px] bg-[#5c6bc0]/35 pointer-events-none" style={{ animationDelay: '-14s' }}></div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
-            className="relative text-center max-w-4xl mx-auto mb-12"
-          >
-            <span className="inline-block px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#e8eaf6] text-sm font-medium mb-6">
-              🏠 India's women-only roommate finder
-            </span>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Find Your Perfect{' '}
-              <span className="bg-gradient-to-r from-[#c5cae9] to-[#9fa8da] bg-clip-text text-transparent">
-                Roommate
+          <div className="relative z-10 text-center max-w-4xl mx-auto mb-12">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#e8eaf6] text-sm font-medium mb-6 backdrop-blur-sm"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#a5d6a7] pulse-dot"></span>
+              India's women-only roommate finder
+            </motion.span>
+
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              <RevealWords text="Find Your Perfect" />
+              <br />
+              <span className="text-gradient-animated">
+                <RevealWords text="Roommate" delay={0.3} />
               </span>
             </h1>
-            <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="text-xl text-[#e8eaf6] mb-2 max-w-2xl mx-auto"
+            >
               Saakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.75, duration: 0.6 }}
+              className="text-lg text-[#c5cae9] mb-8"
+            >
+              Matched on{' '}
+              <RotatingWord
+                className="font-semibold text-white"
+                words={['sleep schedule 🌙', 'cleanliness 🧹', 'food preference 🥗', 'budget 💰', 'social energy 🎉']}
+              />
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.85, duration: 0.5 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <MagneticButton
                 onClick={() => navigate('/register')}
-                className="sakhi-button-primary text-lg px-8 py-3"
+                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#1a237e]/40"
               >
                 Get Started — it's free →
-              </button>
-              <button
+              </MagneticButton>
+              <MagneticButton
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                className="sakhi-button-secondary"
+                className="sakhi-button-secondary text-lg px-8 py-3"
               >
                 Learn More
-              </button>
-            </div>
+              </MagneticButton>
+            </motion.div>
 
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#c5cae9]">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.6 }}
+              className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#c5cae9]"
+            >
               <span>🛡️ Verified profiles</span>
               <span>👩 Women-only community</span>
               <span>🔒 Privacy first</span>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
-            className="relative w-full max-w-4xl animate-float"
+            initial={{ opacity: 0, y: 40, rotateX: 12 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+            className="relative z-10 w-full max-w-4xl animate-float"
           >
             <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
               {/* Mock browser bar */}
@@ -112,7 +155,9 @@ const Landing = () => {
                     <div className="text-white font-semibold">Your Top Matches</div>
                     <div className="text-xs text-[#c5cae9]">Based on lifestyle & preferences</div>
                   </div>
-                  <div className="px-3 py-1 bg-[#7986cb]/40 rounded-full text-xs text-[#e8eaf6]">3 new today</div>
+                  <div className="px-3 py-1 bg-[#7986cb]/40 rounded-full text-xs text-[#e8eaf6] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#a5d6a7] pulse-dot"></span> 3 new today
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -121,7 +166,14 @@ const Landing = () => {
                     { initial: 'P', match: '91%', from: '#9fa8da', to: '#5c6bc0' },
                     { initial: 'R', match: '88%', from: '#c5cae9', to: '#7986cb' }
                   ].map((card, index) => (
-                    <div key={index} className="bg-white/10 rounded-xl border border-white/10 p-4">
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 + index * 0.12, duration: 0.45 }}
+                      whileHover={{ y: -4, scale: 1.02 }}
+                      className="bg-white/10 rounded-xl border border-white/10 p-4 shine-card"
+                    >
                       <div className="flex items-center justify-between mb-3">
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
@@ -133,12 +185,12 @@ const Landing = () => {
                           {card.match} match
                         </span>
                       </div>
-                      <div className="h-2.5 bg-white/20 rounded-full w-3/4 mb-2"></div>
-                      <div className="h-2.5 bg-white/10 rounded-full w-1/2 mb-3"></div>
+                      <div className="h-2.5 skeleton-bar rounded-full w-3/4 mb-2"></div>
+                      <div className="h-2.5 skeleton-bar rounded-full w-1/2 mb-3"></div>
                       <span className="inline-block px-2 py-0.5 bg-white/10 rounded-full text-xs text-[#c5cae9]">
                         ✓ Verified
                       </span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -146,14 +198,41 @@ const Landing = () => {
           </motion.div>
         </section>
 
-        {/* Highlights strip */}
-        <section className="py-6 bg-[#283593]/60 border-y border-white/10">
+        {/* Infinite marquee of what Saakhi does */}
+        <section className="py-5 bg-[#283593]/60 border-y border-white/10 overflow-hidden marquee-wrap">
+          <div className="marquee-track gap-3">
+            {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              <span
+                key={i}
+                className="px-4 py-1.5 bg-white/5 border border-white/15 rounded-full text-sm text-[#e8eaf6] whitespace-nowrap"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        {/* Stats band with counters */}
+        <section className="py-14">
           <div className="container mx-auto px-4">
-            <div className="flex flex-wrap justify-center gap-3 text-[#e8eaf6] font-medium">
-              {['👩 100% Women-only', '💸 Free to use', '💬 Real-time private chat', '🔒 Privacy-first profiles'].map((chip) => (
-                <span key={chip} className="px-4 py-1.5 bg-white/5 border border-white/15 rounded-full text-sm">
-                  {chip}
-                </span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              {[
+                { value: 9, suffix: '', label: 'Lifestyle questions' },
+                { value: 100, suffix: '%', label: 'Women-only' },
+                { value: 0, prefix: '₹', suffix: '', label: 'Cost, forever' },
+                { value: 24, suffix: '/7', label: 'Private chat' },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: i * 0.1 }}
+                  className="sakhi-card glow-hover p-5 text-center"
+                >
+                  <div className="text-4xl font-bold text-gradient-animated">
+                    <CountUp to={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-sm text-[#c5cae9] mt-1">{stat.label}</div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -192,14 +271,24 @@ const Landing = () => {
                 <motion.div
                   key={index}
                   {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: index * 0.1 }}
-                  className="sakhi-card p-6 text-center"
+                  transition={{ ...fadeUp.transition, delay: index * 0.12 }}
                 >
-                  <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] flex items-center justify-center text-2xl mb-4 shadow-lg">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-[#e8eaf6]">{feature.description}</p>
+                  <TiltCard className="sakhi-card shine-card glow-hover p-6 text-center h-full">
+                    <motion.div
+                      whileHover={{ rotate: [0, -12, 12, 0], scale: 1.12 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#3949ab] to-[#7986cb] flex items-center justify-center text-3xl mb-4 shadow-lg"
+                      style={{ transform: 'translateZ(40px)' }}
+                    >
+                      {feature.icon}
+                    </motion.div>
+                    <h3 className="text-xl font-semibold text-white mb-2" style={{ transform: 'translateZ(25px)' }}>
+                      {feature.title}
+                    </h3>
+                    <p className="text-[#e8eaf6]" style={{ transform: 'translateZ(15px)' }}>
+                      {feature.description}
+                    </p>
+                  </TiltCard>
                 </motion.div>
               ))}
             </div>
@@ -217,7 +306,15 @@ const Landing = () => {
               </p>
             </motion.div>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="relative grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* connecting line that draws itself on scroll */}
+              <motion.div
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 1.1, ease: 'easeInOut' }}
+                className="hidden md:block absolute top-0 left-[12%] right-[12%] h-0.5 origin-left bg-gradient-to-r from-[#7986cb] via-[#c5cae9] to-[#7986cb]"
+              />
               {[
                 {
                   step: "1",
@@ -242,14 +339,23 @@ const Landing = () => {
               ].map((item, index) => (
                 <motion.div
                   key={index}
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: index * 0.1 }}
-                  className="sakhi-card p-6 text-center relative"
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.5, delay: 0.25 + index * 0.15, ease: 'easeOut' }}
+                  whileHover={{ y: -8 }}
+                  className="sakhi-card shine-card glow-hover p-6 text-center relative"
                 >
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] border border-[#c5cae9]/40 flex items-center justify-center text-white font-bold shadow-lg">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.35 + index * 0.15 }}
+                      className="w-11 h-11 rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] border border-[#c5cae9]/40 flex items-center justify-center text-white font-bold shadow-lg"
+                    >
                       {item.step}
-                    </div>
+                    </motion.div>
                   </div>
                   <h3 className="text-xl font-semibold text-white mt-4 mb-2">{item.title}</h3>
                   <p className="text-[#e8eaf6]">{item.description}</p>
@@ -258,9 +364,9 @@ const Landing = () => {
             </div>
             
             <div className="mt-12 text-center">
-              <button onClick={() => navigate('/register')} className="sakhi-button-primary">
-                Start Your Journey
-              </button>
+              <MagneticButton onClick={() => navigate('/register')} className="sakhi-button-primary text-lg px-8 py-3">
+                Start Your Journey →
+              </MagneticButton>
             </div>
           </div>
         </section>
@@ -322,20 +428,41 @@ const Landing = () => {
 
             <div className="space-y-3">
               {FAQS.map((faq, index) => (
-                <div key={index} className="sakhi-card overflow-hidden">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: index * 0.07 }}
+                  className="sakhi-card glow-hover overflow-hidden"
+                >
                   <button
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
                     className="w-full flex items-center justify-between text-left px-5 py-4"
                   >
                     <span className="text-white font-medium pr-4">{faq.q}</span>
-                    <span className="text-[#c5cae9] text-xl flex-shrink-0">
-                      {openFaq === index ? '−' : '+'}
-                    </span>
+                    <motion.span
+                      animate={{ rotate: openFaq === index ? 135 : 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-[#c5cae9] text-2xl leading-none flex-shrink-0"
+                    >
+                      +
+                    </motion.span>
                   </button>
-                  {openFaq === index && (
-                    <p className="px-5 pb-4 text-[#e8eaf6]">{faq.a}</p>
-                  )}
-                </div>
+                  <AnimatePresence initial={false}>
+                    {openFaq === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-4 text-[#e8eaf6]">{faq.a}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -352,12 +479,12 @@ const Landing = () => {
               <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
                 Join Saakhi today and start your journey to harmonious co-living.
               </p>
-              <button
+              <MagneticButton
                 onClick={() => navigate('/register')}
-                className="sakhi-button-primary text-lg px-8 py-3"
+                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#1a237e]/40"
               >
-                Get Started Now
-              </button>
+                Get Started Now →
+              </MagneticButton>
               <p className="text-sm text-[#c5cae9] mt-4">Free forever · No credit card needed</p>
             </motion.div>
           </div>

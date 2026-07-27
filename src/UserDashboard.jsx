@@ -675,8 +675,10 @@ const UserDashboard = () => {
   // ---------- render ----------
   return (
     <div className="relative min-h-screen w-full text-white bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900">
-      <div className="fixed top-0 -left-40 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="fixed bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="aurora top-0 -left-40 w-[500px] h-[500px] bg-blue-400/25"></div>
+        <div className="aurora bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500/25" style={{ animationDelay: '-10s' }}></div>
+      </div>
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Navbar */}
         <motion.nav
@@ -697,13 +699,18 @@ const UserDashboard = () => {
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
                     className={`relative px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 text-sm sm:text-base transition ${
-                      activeTab === t.id
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/25'
-                        : 'bg-transparent hover:bg-blue-400/20 text-blue-200'
+                      activeTab === t.id ? 'text-white' : 'text-blue-200 hover:text-white'
                     }`}
                   >
-                    <t.icon size={16} />
-                    <span className="hidden sm:inline">{t.label}</span>
+                    {activeTab === t.id && (
+                      <motion.span
+                        layoutId="activeTabPill"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/25"
+                      />
+                    )}
+                    <t.icon size={16} className="relative z-10" />
+                    <span className="hidden sm:inline relative z-10">{t.label}</span>
                     {t.id === 'messages' && unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 rounded-full text-[11px] font-bold flex items-center justify-center">
                         {unreadCount}
@@ -795,8 +802,15 @@ const UserDashboard = () => {
                             { label: 'Matches', value: allCandidates.length, icon: Heart, tint: 'text-pink-300 bg-pink-500/15' },
                             { label: 'Conversations', value: chats.length, icon: MessageCircle, tint: 'text-blue-300 bg-blue-500/15' },
                             { label: 'Profile Complete', value: completeness + '%', icon: User, tint: 'text-emerald-300 bg-emerald-500/15' },
-                          ].map((s) => (
-                            <div key={s.label} className={`${card} flex items-center gap-3 py-3`}>
+                          ].map((s, i) => (
+                            <motion.div
+                              key={s.label}
+                              initial={{ opacity: 0, y: 14 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.35, delay: i * 0.08 }}
+                              whileHover={{ y: -3 }}
+                              className={`${card} glow-hover flex items-center gap-3 py-3`}
+                            >
                               <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${s.tint}`}>
                                 <s.icon size={18} />
                               </div>
@@ -804,7 +818,7 @@ const UserDashboard = () => {
                                 <div className="text-xl font-bold leading-tight">{s.value}</div>
                                 <div className="text-xs text-blue-200 truncate">{s.label}</div>
                               </div>
-                            </div>
+                            </motion.div>
                           ))}
                         </div>
 
@@ -884,8 +898,15 @@ const UserDashboard = () => {
                             </p>
                           </div>
                         ) : (
-                          candidates.map((m) => (
-                            <div key={m.id} className={`${card} hover:border-blue-400/40 transition`}>
+                          candidates.map((m, idx) => (
+                            <motion.div
+                              key={m.id}
+                              initial={{ opacity: 0, y: 18 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.35, delay: Math.min(idx * 0.06, 0.4) }}
+                              whileHover={{ y: -4 }}
+                              className={`${card} shine-card hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-500/10`}
+                            >
                               <div
                                 className="flex justify-between items-center gap-3 flex-wrap cursor-pointer"
                                 onClick={() => setSelectedMatch(m)}
@@ -941,7 +962,7 @@ const UserDashboard = () => {
                                   View Profile →
                                 </button>
                               </div>
-                            </div>
+                            </motion.div>
                           ))
                         )}
                       </div>

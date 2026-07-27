@@ -454,7 +454,7 @@ const styles = {
   },
   leftPanel: {
     flex: 1,
-    backgroundColor: '#3949ab',
+    background: 'linear-gradient(135deg, #283593 0%, #3949ab 50%, #5c6bc0 100%)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start', // lift content up

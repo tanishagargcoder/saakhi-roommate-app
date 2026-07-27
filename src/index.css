@@ -53,6 +53,95 @@ body {
   animation: pulse-soft 3s ease-in-out infinite;
 }
 
+/* ===== Premium motion layer ===== */
+
+/* Slow-drifting aurora blobs behind the page */
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.15); }
+  66% { transform: translate(-40px, 50px) scale(0.9); }
+}
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+  animation: aurora-drift 22s ease-in-out infinite;
+}
+
+/* Animated gradient text */
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.text-gradient-animated {
+  background: linear-gradient(90deg, #c5cae9, #9fa8da, #ffffff, #9fa8da, #c5cae9);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 6s ease infinite;
+}
+
+/* Shine sweep across a card on hover */
+.shine-card { position: relative; overflow: hidden; }
+.shine-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+.shine-card:hover::after { left: 130%; }
+
+/* Glow ring that appears on hover */
+.glow-hover { transition: box-shadow 0.35s ease, transform 0.35s ease, border-color 0.35s ease; }
+.glow-hover:hover {
+  box-shadow: 0 0 0 1px rgba(197, 202, 233, 0.35), 0 18px 45px -12px rgba(121, 134, 203, 0.65);
+}
+
+/* Infinite marquee strip */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 32s linear infinite;
+}
+.marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+
+/* Soft pulsing glow (badges, live dots) */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(165, 214, 167, 0.55); }
+  50% { opacity: 0.85; box-shadow: 0 0 0 8px rgba(165, 214, 167, 0); }
+}
+.pulse-dot { animation: glow-pulse 2.2s ease-out infinite; }
+
+/* Chat bubble typing shimmer used in the hero mock */
+@keyframes bar-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-bar {
+  background: linear-gradient(90deg, rgba(255,255,255,0.12) 25%, rgba(255,255,255,0.28) 50%, rgba(255,255,255,0.12) 75%);
+  background-size: 200% 100%;
+  animation: bar-shimmer 2.4s linear infinite;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .text-gradient-animated, .marquee-track, .pulse-dot, .skeleton-bar, .animate-float {
+    animation: none !important;
+  }
+}
+
 /* Subtle dot-grid texture for section backgrounds */
 .bg-dots {
   background-image: radial-gradient(rgba(197, 202, 233, 0.14) 1px, transparent 1px);
