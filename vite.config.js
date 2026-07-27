@@ -24,6 +24,10 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // A new deploy takes over immediately instead of waiting for every tab to close
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         // don't let the service worker hijack Firebase auth/firestore requests
         navigateFallbackDenylist: [/^\/__/],
         runtimeCaching: [
