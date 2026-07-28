@@ -129,8 +129,8 @@ const CHECKLIST = [
 const EMPTY_LISTING = { title: '', city: '', rent: '', roomType: 'Private Room', description: '', amenities: [] };
 
 const card = 'glass-card p-4';
-const inputCls = 'w-full px-3 py-2 rounded-lg bg-blue-950/70 border border-white/15 text-white placeholder-blue-300/50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-400/30 transition';
-const labelCls = 'block text-sm text-blue-200 mb-1';
+const inputCls = 'w-full px-3 py-2 rounded-lg bg-[#12030f]/70 border border-white/15 text-white placeholder-[#ffb3d0]/50 focus:outline-none focus:border-[#ffb3d0] focus:ring-2 focus:ring-[#ff7ab0]/30 transition';
+const labelCls = 'block text-sm text-[#ffd0e2] mb-1';
 
 // ---------- preferences form (shared by onboarding + profile) ----------
 const PreferencesFields = ({ value, onChange }) => (
@@ -662,7 +662,7 @@ const UserDashboard = () => {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
-  const scoreColor = (s) => (s >= 75 ? 'text-emerald-400' : s >= 50 ? 'text-blue-400' : 'text-slate-300');
+  const scoreColor = (s) => (s >= 75 ? 'text-[#ffd36b]' : s >= 50 ? 'text-[#ff7ab0]' : 'text-[#b98aa0]');
 
   const tabs = [
     { id: 'matches', label: 'Matches', icon: Users },
@@ -675,10 +675,11 @@ const UserDashboard = () => {
 
   // ---------- render ----------
   return (
-    <div className="relative min-h-screen w-full text-white bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900">
+    <div className="relative min-h-screen w-full text-white bg-gradient-to-b from-[#2a0620] via-[#1a0418] to-[#12030f]">
+      {/* Storm palette, no particle sim here — the dashboard stays calm and readable */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="aurora top-0 -left-40 w-[500px] h-[500px] bg-blue-400/25"></div>
-        <div className="aurora bottom-0 -right-40 w-[500px] h-[500px] bg-blue-500/25" style={{ animationDelay: '-10s' }}></div>
+        <div className="aurora top-0 -left-40 w-[520px] h-[520px] bg-[#ff2d6b]/18"></div>
+        <div className="aurora bottom-0 -right-40 w-[520px] h-[520px] bg-[#ffd36b]/12" style={{ animationDelay: '-11s' }}></div>
       </div>
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Navbar */}
@@ -686,11 +687,11 @@ const UserDashboard = () => {
           initial={{ y: -80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="fixed top-0 left-0 w-full bg-blue-900/80 backdrop-blur-xl shadow-lg z-20 border-b border-blue-400/20"
+          className="fixed top-0 left-0 w-full bg-[#2a0620]/80 backdrop-blur-xl shadow-lg z-20 border-b border-[#ff7ab0]/20"
         >
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
-              <span className="text-2xl font-extrabold text-blue-400 tracking-tight drop-shadow-lg">
+              <span className="text-2xl font-extrabold text-[#ff7ab0] tracking-tight drop-shadow-lg">
                 Saakhi
               </span>
 
@@ -700,14 +701,14 @@ const UserDashboard = () => {
                     key={t.id}
                     onClick={() => setActiveTab(t.id)}
                     className={`relative px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 text-sm sm:text-base transition ${
-                      activeTab === t.id ? 'text-white' : 'text-blue-200 hover:text-white'
+                      activeTab === t.id ? 'text-white' : 'text-[#ffd0e2] hover:text-white'
                     }`}
                   >
                     {activeTab === t.id && (
                       <motion.span
                         layoutId="activeTabPill"
                         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                        className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/25"
+                        className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#ff2d6b] to-[#a01844] shadow-lg shadow-[#ff2d6b]/25"
                       />
                     )}
                     <t.icon size={16} className="relative z-10" />
@@ -728,7 +729,7 @@ const UserDashboard = () => {
                 <button
                   onClick={handleSignOut}
                   title="Sign out"
-                  className="text-blue-200 hover:text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
+                  className="text-[#ffd0e2] hover:text-white p-2 rounded-full hover:bg-[#e02058] transition-colors"
                 >
                   <LogOut size={18} />
                 </button>
@@ -759,16 +760,16 @@ const UserDashboard = () => {
             transition={{ duration: 0.45 }}
             className="glass-card accent-top relative overflow-hidden p-5 md:p-6 mb-6"
           >
-            <div className="absolute -top-16 -right-10 w-56 h-56 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -top-16 -right-10 w-56 h-56 bg-[#ff7ab0]/20 rounded-full blur-3xl pointer-events-none"></div>
             <div className="relative flex items-center gap-4 flex-wrap">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-900/40">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-2xl font-bold shadow-lg shadow-[#2a0620]/40">
                 {initialOf(displayName)}
               </div>
               <div className="flex-1 min-w-[200px]">
                 <h1 className="text-2xl md:text-3xl font-bold leading-tight">
                   {greeting}, <span className="text-gradient-animated">{displayName}</span> 👋
                 </h1>
-                <p className="text-blue-200 text-sm mt-1">
+                <p className="text-[#ffd0e2] text-sm mt-1">
                   {!profileLoading && iHavePrefs
                     ? allCandidates.length > 0
                       ? `You have ${allCandidates.length} compatible ${allCandidates.length === 1 ? 'match' : 'matches'} waiting.`
@@ -782,7 +783,7 @@ const UserDashboard = () => {
                   {unreadCount > 0 && (
                     <button
                       onClick={() => setActiveTab('messages')}
-                      className="px-3 py-2 rounded-xl bg-blue-500/25 border border-blue-400/40 text-sm hover:bg-blue-500/40 transition"
+                      className="px-3 py-2 rounded-xl bg-[#ff2d6b]/25 border border-[#ff7ab0]/40 text-sm hover:bg-[#ff2d6b]/40 transition"
                     >
                       💬 {unreadCount} new
                     </button>
@@ -813,9 +814,9 @@ const UserDashboard = () => {
                   {!iHavePrefs ? (
                     /* Onboarding: no fake data for new users */
                     <div className={`${card} max-w-2xl mx-auto p-8 text-center`}>
-                      <Sparkles className="w-10 h-10 text-blue-300 mx-auto mb-3" />
+                      <Sparkles className="w-10 h-10 text-[#ffb3d0] mx-auto mb-3" />
                       <h2 className="text-2xl font-bold mb-2">Welcome, {displayName}! 👋</h2>
-                      <p className="text-blue-200 mb-6">
+                      <p className="text-[#ffd0e2] mb-6">
                         Tell us how you like to live, and we'll match you with compatible roommates.
                         Your matches appear only after this — no guesswork.
                       </p>
@@ -825,7 +826,7 @@ const UserDashboard = () => {
                       <button
                         onClick={savePreferences}
                         disabled={saving}
-                        className="mt-6 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold disabled:opacity-60"
+                        className="mt-6 px-6 py-2.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg font-semibold disabled:opacity-60"
                       >
                         {saving ? 'Saving…' : 'Save & Find Matches'}
                       </button>
@@ -837,7 +838,7 @@ const UserDashboard = () => {
                         <div className="grid grid-cols-3 gap-3">
                           {[
                             { label: 'Matches', value: allCandidates.length, icon: Heart, tint: 'text-pink-300 bg-pink-500/15' },
-                            { label: 'Conversations', value: chats.length, icon: MessageCircle, tint: 'text-blue-300 bg-blue-500/15' },
+                            { label: 'Conversations', value: chats.length, icon: MessageCircle, tint: 'text-[#ffb3d0] bg-[#ff2d6b]/15' },
                             { label: 'Profile Complete', value: completeness + '%', icon: User, tint: 'text-emerald-300 bg-emerald-500/15' },
                           ].map((s, i) => (
                             <motion.div
@@ -853,7 +854,7 @@ const UserDashboard = () => {
                               </div>
                               <div className="min-w-0">
                                 <div className="text-xl font-bold leading-tight">{s.value}</div>
-                                <div className="text-xs text-blue-200 truncate">{s.label}</div>
+                                <div className="text-xs text-[#ffd0e2] truncate">{s.label}</div>
                               </div>
                             </motion.div>
                           ))}
@@ -870,9 +871,9 @@ const UserDashboard = () => {
                                 <button
                                   key={m.id}
                                   onClick={() => setSelectedMatch(m)}
-                                  className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-800/50 border border-blue-400/30 hover:border-blue-300 transition"
+                                  className="flex items-center gap-2 px-3 py-2 rounded-full bg-[#4a0c2c]/50 border border-[#ff7ab0]/30 hover:border-[#ffb3d0] transition"
                                 >
-                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-xs font-bold">
+                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-xs font-bold">
                                     {initialOf(m.name)}
                                   </div>
                                   <span className="text-sm font-medium">{m.name?.split(' ')[0]}</span>
@@ -891,7 +892,7 @@ const UserDashboard = () => {
                               className={`px-3 py-1.5 rounded-lg text-sm border transition flex items-center gap-1.5 ${
                                 showSavedOnly
                                   ? 'bg-pink-500/25 border-pink-400/60 text-pink-200'
-                                  : 'bg-blue-950/80 border-blue-400/30 text-blue-200 hover:border-blue-400'
+                                  : 'bg-[#12030f]/80 border-[#ff7ab0]/30 text-[#ffd0e2] hover:border-[#ff7ab0]'
                               }`}
                             >
                               <Heart size={14} className={showSavedOnly ? 'fill-pink-400 text-pink-400' : ''} /> Saved
@@ -901,19 +902,19 @@ const UserDashboard = () => {
                               placeholder="City…"
                               value={cityFilter}
                               onChange={(e) => setCityFilter(e.target.value)}
-                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-28"
+                              className="px-3 py-1.5 rounded-lg bg-[#12030f]/80 border border-[#ff7ab0]/30 text-sm text-white focus:outline-none focus:border-[#ff7ab0] w-28"
                             />
                             <input
                               type="number"
                               placeholder="Max ₹/mo"
                               value={budgetMax}
                               onChange={(e) => setBudgetMax(e.target.value)}
-                              className="px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400 w-28"
+                              className="px-3 py-1.5 rounded-lg bg-[#12030f]/80 border border-[#ff7ab0]/30 text-sm text-white focus:outline-none focus:border-[#ff7ab0] w-28"
                             />
                             <select
                               value={foodFilter}
                               onChange={(e) => setFoodFilter(e.target.value)}
-                              className="px-2 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/30 text-sm text-white focus:outline-none focus:border-blue-400"
+                              className="px-2 py-1.5 rounded-lg bg-[#12030f]/80 border border-[#ff7ab0]/30 text-sm text-white focus:outline-none focus:border-[#ff7ab0]"
                             >
                               <option value="">Any food</option>
                               <option>Vegetarian</option>
@@ -924,11 +925,11 @@ const UserDashboard = () => {
                         </div>
                         {candidates.length === 0 ? (
                           <div className={`${card} p-10 text-center`}>
-                            <Heart className="w-12 h-12 text-blue-300 mx-auto mb-4 soft-bob" />
+                            <Heart className="w-12 h-12 text-[#ffb3d0] mx-auto mb-4 soft-bob" />
                             <p className="font-medium mb-1">
                               {cityFilter.trim() ? `No matches in "${cityFilter.trim()}"` : 'No matches yet'}
                             </p>
-                            <p className="text-sm text-blue-200">
+                            <p className="text-sm text-[#ffd0e2]">
                               {cityFilter.trim()
                                 ? 'Try clearing the city filter to see all your matches.'
                                 : "Saakhi is growing! You'll see compatible roommates here as more women join and set their preferences."}
@@ -951,18 +952,18 @@ const UserDashboard = () => {
                               >
                                 <div className="flex items-center gap-3">
                                   <div className="relative">
-                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-900/40">
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-[#2a0620]/40">
                                       {initialOf(m.name)}
                                     </div>
                                     {m.score >= 75 && (
-                                      <span className="absolute -top-1.5 -right-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-400 text-emerald-950 font-bold shadow">
+                                      <span className="absolute -top-1.5 -right-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-[#ffd36b] text-[#4a1000] font-bold shadow">
                                         TOP
                                       </span>
                                     )}
                                   </div>
                                   <div>
                                     <h3 className="font-semibold text-lg leading-tight">{m.name || 'Saakhi member'}</h3>
-                                    <p className="text-sm text-blue-200 flex items-center gap-2 flex-wrap mt-0.5">
+                                    <p className="text-sm text-[#ffd0e2] flex items-center gap-2 flex-wrap mt-0.5">
                                       {m.occupation && <span>{m.occupation}</span>}
                                       {m.location && (
                                         <span className="flex items-center">
@@ -977,7 +978,7 @@ const UserDashboard = () => {
                                         </span>
                                       )}
                                       {personalityChips(m).slice(0, 2).map((chip) => (
-                                        <span key={chip} className="text-xs px-2 py-0.5 bg-white/10 text-blue-100 rounded-full">
+                                        <span key={chip} className="text-xs px-2 py-0.5 bg-white/10 text-[#ffe3ef] rounded-full">
                                           {chip}
                                         </span>
                                       ))}
@@ -989,7 +990,7 @@ const UserDashboard = () => {
                               <div className="flex items-center gap-2 mt-3">
                                 <button
                                   onClick={() => openChatWith(m)}
-                                  className="px-4 py-1.5 text-sm rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium flex items-center gap-1.5"
+                                  className="px-4 py-1.5 text-sm rounded-full bg-[#ff2d6b] hover:bg-[#e02058] transition font-medium flex items-center gap-1.5"
                                 >
                                   <MessageCircle size={14} /> Message
                                 </button>
@@ -999,14 +1000,14 @@ const UserDashboard = () => {
                                   className={`p-2 rounded-full border transition ${
                                     savedIds.includes(m.id)
                                       ? 'bg-pink-500/25 border-pink-400/60'
-                                      : 'border-blue-400/30 hover:border-pink-400/60'
+                                      : 'border-[#ff7ab0]/30 hover:border-pink-400/60'
                                   }`}
                                 >
-                                  <Heart size={15} className={savedIds.includes(m.id) ? 'fill-pink-400 text-pink-400' : 'text-blue-200'} />
+                                  <Heart size={15} className={savedIds.includes(m.id) ? 'fill-pink-400 text-pink-400' : 'text-[#ffd0e2]'} />
                                 </button>
                                 <button
                                   onClick={() => setSelectedMatch(m)}
-                                  className="ml-auto text-sm text-blue-300 hover:underline"
+                                  className="ml-auto text-sm text-[#ffb3d0] hover:underline"
                                 >
                                   View Profile →
                                 </button>
@@ -1020,16 +1021,16 @@ const UserDashboard = () => {
                         {completeness < 100 && (
                           <div className={card}>
                             <h2 className="text-lg font-semibold mb-2">Complete Your Profile</h2>
-                            <div className="w-full h-2 bg-blue-950 rounded-full overflow-hidden mb-2">
+                            <div className="w-full h-2 bg-[#12030f] rounded-full overflow-hidden mb-2">
                               <div
-                                className="h-full bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full transition-all"
+                                className="h-full bg-gradient-to-r from-[#ff2d6b] to-[#ffd36b] rounded-full transition-all"
                                 style={{ width: completeness + '%' }}
                               ></div>
                             </div>
-                            <p className="text-sm text-blue-200 mb-2">{completeness}% done — complete profiles get better matches!</p>
+                            <p className="text-sm text-[#ffd0e2] mb-2">{completeness}% done — complete profiles get better matches!</p>
                             <button
                               onClick={() => setActiveTab('profile')}
-                              className="text-sm text-blue-300 hover:underline flex items-center"
+                              className="text-sm text-[#ffb3d0] hover:underline flex items-center"
                             >
                               <Edit className="w-4 h-4 mr-1" /> Finish Profile
                             </button>
@@ -1038,14 +1039,14 @@ const UserDashboard = () => {
 
                         <div className={card}>
                           <h2 className="text-lg font-semibold mb-2">Your Preferences</h2>
-                          <ul className="text-sm space-y-1 text-blue-100">
+                          <ul className="text-sm space-y-1 text-[#ffe3ef]">
                             {PREF_FIELDS.filter((f) => profile.preferences[f.key]).map((f) => (
                               <li key={f.key}>{f.label}: <span className="text-white">{profile.preferences[f.key]}</span></li>
                             ))}
                           </ul>
                           <button
                             onClick={() => setActiveTab('profile')}
-                            className="mt-3 text-sm text-blue-300 hover:underline flex items-center"
+                            className="mt-3 text-sm text-[#ffb3d0] hover:underline flex items-center"
                           >
                             <Edit className="w-4 h-4 mr-1" /> Edit Preferences
                           </button>
@@ -1067,10 +1068,10 @@ const UserDashboard = () => {
                                         Cancel
                                       </button>
                                     </div>
-                                    <div className="text-blue-200">
+                                    <div className="text-[#ffd0e2]">
                                       {new Date(v.at).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
                                     </div>
-                                    {v.note && <div className="text-xs text-blue-200/80 mt-0.5">{v.note}</div>}
+                                    {v.note && <div className="text-xs text-[#ffd0e2]/80 mt-0.5">{v.note}</div>}
                                   </li>
                                 );
                               })}
@@ -1082,7 +1083,7 @@ const UserDashboard = () => {
                           <h2 className="text-lg font-semibold mb-2 flex items-center">
                             <Shield className="w-5 h-5 mr-2" /> Safety First
                           </h2>
-                          <ul className="text-sm space-y-1.5 text-blue-100">
+                          <ul className="text-sm space-y-1.5 text-[#ffe3ef]">
                             <li>✓ Meet first in public places</li>
                             <li>✓ Never share financial details in chat</li>
                             <li>✓ Verify identity before moving in</li>
@@ -1101,7 +1102,7 @@ const UserDashboard = () => {
                     <h2 className="text-xl font-semibold">Rooms Available</h2>
                     <button
                       onClick={() => setShowListingForm((s) => !s)}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold flex items-center gap-1.5"
+                      className="px-4 py-2 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg text-sm font-semibold flex items-center gap-1.5"
                     >
                       <Plus size={16} /> {showListingForm ? 'Cancel' : 'Post Your Room'}
                     </button>
@@ -1135,7 +1136,7 @@ const UserDashboard = () => {
                         <span className="font-bold text-emerald-300">
                           ₹{Math.ceil((Number(splitRent || 0) + Number(splitUtils || 0)) / splitPeople).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-sm text-blue-200"> /month</span>
+                        <span className="text-sm text-[#ffd0e2]"> /month</span>
                       </p>
                     )}
                   </div>
@@ -1192,8 +1193,8 @@ const UserDashboard = () => {
                                   })}
                                   className={`px-3 py-1 rounded-full text-xs border transition ${
                                     on
-                                      ? 'bg-blue-500 border-blue-400 text-white'
-                                      : 'bg-transparent border-blue-400/40 text-blue-200 hover:border-blue-400'
+                                      ? 'bg-[#ff2d6b] border-[#ff7ab0] text-white'
+                                      : 'bg-transparent border-[#ff7ab0]/40 text-[#ffd0e2] hover:border-[#ff7ab0]'
                                   }`}
                                 >
                                   {a}
@@ -1206,7 +1207,7 @@ const UserDashboard = () => {
                       <button
                         onClick={saveListing}
                         disabled={saving}
-                        className="mt-4 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold disabled:opacity-60"
+                        className="mt-4 px-6 py-2 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg font-semibold disabled:opacity-60"
                       >
                         {saving ? 'Posting…' : 'Post Room'}
                       </button>
@@ -1215,39 +1216,39 @@ const UserDashboard = () => {
 
                   {listings.length === 0 ? (
                     <div className={`${card} p-10 text-center`}>
-                      <Home className="w-12 h-12 text-blue-300 mx-auto mb-4 soft-bob" />
+                      <Home className="w-12 h-12 text-[#ffb3d0] mx-auto mb-4 soft-bob" />
                       <p className="font-medium mb-1">No rooms posted yet</p>
-                      <p className="text-sm text-blue-200">
+                      <p className="text-sm text-[#ffd0e2]">
                         Have a spare room? Be the first to post it and find your roommate!
                       </p>
                     </div>
                   ) : (
                     listings.map((l) => (
-                      <div key={l.id} className={`${card} hover:border-blue-400/40 transition`}>
+                      <div key={l.id} className={`${card} hover:border-[#ff7ab0]/40 transition`}>
                         <div className="flex justify-between items-start gap-3 flex-wrap">
                           <div className="min-w-0">
                             <h3 className="font-semibold text-lg">{l.title}</h3>
                             <p className="text-sm text-gray-300 flex items-center gap-2 flex-wrap mt-0.5">
                               <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" />{l.city}</span>
-                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-xs">{l.roomType}</span>
+                              <span className="px-2 py-0.5 bg-[#ff2d6b]/20 text-[#ffb3d0] rounded-full text-xs">{l.roomType}</span>
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xl font-bold text-blue-400">₹{Number(l.rent).toLocaleString('en-IN')}</p>
-                            <p className="text-xs text-blue-200">per month</p>
+                            <p className="text-xl font-bold text-[#ff7ab0]">₹{Number(l.rent).toLocaleString('en-IN')}</p>
+                            <p className="text-xs text-[#ffd0e2]">per month</p>
                           </div>
                         </div>
-                        {l.description && <p className="text-sm text-blue-100 mt-2">{l.description}</p>}
+                        {l.description && <p className="text-sm text-[#ffe3ef] mt-2">{l.description}</p>}
                         {l.amenities?.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {l.amenities.map((a) => (
-                              <span key={a} className="px-2 py-0.5 bg-white/10 rounded-full text-xs text-blue-200">✓ {a}</span>
+                              <span key={a} className="px-2 py-0.5 bg-white/10 rounded-full text-xs text-[#ffd0e2]">✓ {a}</span>
                             ))}
                           </div>
                         )}
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-blue-400/10">
-                          <div className="flex items-center gap-2 text-sm text-blue-200">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#ff7ab0]/10">
+                          <div className="flex items-center gap-2 text-sm text-[#ffd0e2]">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-white text-xs font-bold">
                               {initialOf(l.ownerName)}
                             </div>
                             {l.ownerId === user.uid ? 'Posted by you' : l.ownerName}
@@ -1262,7 +1263,7 @@ const UserDashboard = () => {
                           ) : (
                             <button
                               onClick={() => openChatWith({ id: l.ownerId, name: l.ownerName })}
-                              className="px-4 py-1.5 text-sm rounded-full bg-blue-500 hover:bg-blue-600 transition font-medium flex items-center gap-1.5"
+                              className="px-4 py-1.5 text-sm rounded-full bg-[#ff2d6b] hover:bg-[#e02058] transition font-medium flex items-center gap-1.5"
                             >
                               <MessageCircle size={14} /> Message
                             </button>
@@ -1279,7 +1280,7 @@ const UserDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-1 glass-card p-4 max-h-[530px] overflow-y-auto">
                     {visibleChats.length === 0 ? (
-                      <div className="text-center py-10 text-blue-200 text-sm">
+                      <div className="text-center py-10 text-[#ffd0e2] text-sm">
                         <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-60" />
                         No conversations yet.<br />Message a match to start chatting!
                       </div>
@@ -1289,14 +1290,14 @@ const UserDashboard = () => {
                           key={chat.id}
                           onClick={() => openChat(chat.id)}
                           className={`flex items-center p-3 rounded-lg cursor-pointer mb-2 transition ${
-                            selectedChatId === chat.id ? 'bg-blue-700/40' : 'hover:bg-blue-800/40'
+                            selectedChatId === chat.id ? 'bg-[#6a0a2a]/40' : 'hover:bg-[#4a0c2c]/40'
                           }`}
                         >
-                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3 text-lg font-bold">
+                          <div className="w-10 h-10 rounded-full bg-[#ff2d6b] flex items-center justify-center mr-3 text-lg font-bold">
                             {initialOf(otherNameOf(chat))}
                           </div>
                           <div className="flex-grow min-w-0">
-                            <div className="font-medium text-blue-200">{otherNameOf(chat)}</div>
+                            <div className="font-medium text-[#ffd0e2]">{otherNameOf(chat)}</div>
                             <div className="text-xs text-gray-300 truncate">{chat.lastMsg || 'Say hi! 👋'}</div>
                           </div>
                           {isUnread(chat) && <div className="ml-2 w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0" />}
@@ -1308,21 +1309,21 @@ const UserDashboard = () => {
                   <div className="md:col-span-2 glass-card p-4 flex flex-col h-[500px]">
                     {selectedChatId ? (
                       <>
-                        <div className="flex items-center mb-3 pb-3 border-b border-blue-400/20">
-                          <User className="w-6 h-6 mr-2 text-blue-200" />
+                        <div className="flex items-center mb-3 pb-3 border-b border-[#ff7ab0]/20">
+                          <User className="w-6 h-6 mr-2 text-[#ffd0e2]" />
                           <span className="font-semibold">
                             {otherNameOf(chats.find((c) => c.id === selectedChatId) || {})}
                           </span>
                           <button
                             onClick={() => setShowVisitForm((s) => !s)}
-                            className="ml-auto px-3 py-1.5 text-xs rounded-full bg-blue-500/30 hover:bg-blue-500/50 border border-blue-400/40 transition flex items-center gap-1.5"
+                            className="ml-auto px-3 py-1.5 text-xs rounded-full bg-[#ff2d6b]/30 hover:bg-[#ff2d6b]/50 border border-[#ff7ab0]/40 transition flex items-center gap-1.5"
                           >
                             <Calendar size={13} /> Schedule Visit
                           </button>
                         </div>
 
                         {showVisitForm && (
-                          <div className="mb-3 p-3 rounded-lg bg-blue-900/60 border border-blue-400/30">
+                          <div className="mb-3 p-3 rounded-lg bg-[#2a0620]/60 border border-[#ff7ab0]/30">
                             <div className="grid grid-cols-2 gap-2 mb-2">
                               <input type="date" className={inputCls} value={visitDraft.date}
                                 min={new Date().toISOString().split('T')[0]}
@@ -1335,7 +1336,7 @@ const UserDashboard = () => {
                               onChange={(e) => setVisitDraft({ ...visitDraft, note: e.target.value })} />
                             <button
                               onClick={scheduleVisit}
-                              className="mt-2 px-4 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold"
+                              className="mt-2 px-4 py-1.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg text-sm font-semibold"
                             >
                               Confirm Visit
                             </button>
@@ -1343,14 +1344,14 @@ const UserDashboard = () => {
                         )}
                         <div className="flex-1 overflow-y-auto mb-4 pr-2">
                           {messages.length === 0 && (
-                            <div className="text-center text-blue-200/70 text-sm pt-10">
+                            <div className="text-center text-[#ffd0e2]/70 text-sm pt-10">
                               This is the beginning of your conversation. Say hi! 👋
                             </div>
                           )}
                           {messages.map((msg) => (
                             <div key={msg.id} className={`mb-2 flex ${msg.from === user.uid ? 'justify-end' : ''}`}>
                               <div className={`p-2 px-3 rounded-lg text-sm max-w-xs ${
-                                msg.from === user.uid ? 'bg-violet-500/80' : 'bg-blue-600/80'
+                                msg.from === user.uid ? 'bg-violet-500/80' : 'bg-[#e02058]/80'
                               }`}>
                                 {msg.text}
                               </div>
@@ -1362,20 +1363,20 @@ const UserDashboard = () => {
                           <button
                             onClick={() => setTypedMsg(ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)])}
                             title="Suggest an icebreaker question"
-                            className="px-3 py-2 rounded-l-lg bg-blue-950/80 border-r border-blue-400/20 text-amber-300 hover:text-amber-200"
+                            className="px-3 py-2 rounded-l-lg bg-[#12030f]/80 border-r border-[#ff7ab0]/20 text-amber-300 hover:text-amber-200"
                           >
                             <Sparkles size={18} />
                           </button>
                           <input
                             type="text"
-                            className="w-full px-3 py-2 bg-blue-950/80 text-white focus:outline-none"
+                            className="w-full px-3 py-2 bg-[#12030f]/80 text-white focus:outline-none"
                             placeholder="Type your message… (✨ for an icebreaker)"
                             value={typedMsg}
                             onChange={(e) => setTypedMsg(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') sendMessage(); }}
                           />
                           <button
-                            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-r-lg disabled:opacity-50"
+                            className="bg-[#ff2d6b] hover:bg-[#e02058] px-4 py-2 rounded-r-lg disabled:opacity-50"
                             onClick={sendMessage}
                             disabled={!typedMsg.trim()}
                           >
@@ -1402,17 +1403,17 @@ const UserDashboard = () => {
                       <h2 className="text-xl font-bold flex items-center mb-1">
                         <ClipboardList className="w-5 h-5 mr-2" /> Roommate Agreement Checklist
                       </h2>
-                      <p className="text-sm text-blue-200 mb-4">
+                      <p className="text-sm text-[#ffd0e2] mb-4">
                         Things to sort out with your roommate before moving in together — tick them off as you go.
                       </p>
                       <div className="flex items-center gap-3 mb-5">
-                        <div className="flex-1 h-2 bg-blue-950 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-[#12030f] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full transition-all"
+                            className="h-full bg-gradient-to-r from-[#ff2d6b] to-[#ffd36b] rounded-full transition-all"
                             style={{ width: pct + '%' }}
                           ></div>
                         </div>
-                        <span className="text-sm text-blue-200 whitespace-nowrap">{doneCount}/{CHECKLIST.length} done</span>
+                        <span className="text-sm text-[#ffd0e2] whitespace-nowrap">{doneCount}/{CHECKLIST.length} done</span>
                       </div>
                       <ul className="space-y-2">
                         {CHECKLIST.map((item) => {
@@ -1424,15 +1425,15 @@ const UserDashboard = () => {
                                 className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-lg border transition ${
                                   done
                                     ? 'bg-emerald-500/10 border-emerald-400/40'
-                                    : 'bg-blue-900/50 border-blue-400/20 hover:border-blue-400/50'
+                                    : 'bg-[#2a0620]/50 border-[#ff7ab0]/20 hover:border-[#ff7ab0]/50'
                                 }`}
                               >
                                 <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                                  done ? 'bg-emerald-500 border-emerald-500' : 'border-blue-300'
+                                  done ? 'bg-emerald-500 border-emerald-500' : 'border-[#ffb3d0]'
                                 }`}>
                                   {done && <CheckCircle className="w-4 h-4 text-white" />}
                                 </span>
-                                <span className={done ? 'line-through text-blue-200/70' : 'text-white'}>
+                                <span className={done ? 'line-through text-[#ffd0e2]/70' : 'text-white'}>
                                   {item.label}
                                 </span>
                               </button>
@@ -1452,7 +1453,7 @@ const UserDashboard = () => {
                       <h2 className="text-xl font-bold flex items-center mb-1">
                         <FileText className="w-5 h-5 mr-2" /> Roommate Agreement Generator
                       </h2>
-                      <p className="text-sm text-blue-200 mb-4">
+                      <p className="text-sm text-[#ffd0e2] mb-4">
                         Fill in the details and get a print-ready agreement (save it as PDF from the print dialog).
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1488,7 +1489,7 @@ const UserDashboard = () => {
                       </div>
                       <button
                         onClick={generateAgreement}
-                        className="mt-4 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold flex items-center gap-2"
+                        className="mt-4 px-6 py-2.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg font-semibold flex items-center gap-2"
                       >
                         <FileText size={16} /> Generate & Print
                       </button>
@@ -1502,12 +1503,12 @@ const UserDashboard = () => {
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div className={`${card} p-6`}>
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-white text-2xl font-bold">
                         {initialOf(displayName)}
                       </div>
                       <div>
                         <h2 className="text-xl font-bold">{displayName}</h2>
-                        <p className="text-sm text-blue-200">{user?.email}</p>
+                        <p className="text-sm text-[#ffd0e2]">{user?.email}</p>
                       </div>
                     </div>
 
@@ -1562,10 +1563,10 @@ const UserDashboard = () => {
                     {personalityChips(profile).length > 0 && (
                       <>
                         <h3 className="text-lg font-semibold mt-6 mb-2">Your Personality Snapshot</h3>
-                        <p className="text-xs text-blue-200 mb-2">Auto-generated from your answers — this is how matches see you.</p>
+                        <p className="text-xs text-[#ffd0e2] mb-2">Auto-generated from your answers — this is how matches see you.</p>
                         <div className="flex flex-wrap gap-1.5">
                           {personalityChips(profile).map((chip) => (
-                            <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-blue-100">
+                            <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-[#ffe3ef]">
                               {chip}
                             </span>
                           ))}
@@ -1579,7 +1580,7 @@ const UserDashboard = () => {
                     <button
                       onClick={saveProfile}
                       disabled={saving}
-                      className="mt-6 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold disabled:opacity-60"
+                      className="mt-6 px-6 py-2.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg font-semibold disabled:opacity-60"
                     >
                       {saving ? 'Saving…' : 'Save Profile'}
                     </button>
@@ -1592,7 +1593,7 @@ const UserDashboard = () => {
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div className={`${card} p-6`}>
                     <h2 className="text-lg font-semibold mb-4">Account</h2>
-                    <div className="text-sm space-y-2 text-blue-100">
+                    <div className="text-sm space-y-2 text-[#ffe3ef]">
                       <p>Email: <span className="text-white">{user?.email}</span></p>
                       <p>Member since:{' '}
                         <span className="text-white">
@@ -1608,12 +1609,12 @@ const UserDashboard = () => {
                     <h2 className="text-lg font-semibold mb-4 flex items-center">
                       <KeyRound className="w-5 h-5 mr-2" /> Security
                     </h2>
-                    <p className="text-sm text-blue-200 mb-3">
+                    <p className="text-sm text-[#ffd0e2] mb-3">
                       We'll email you a secure link to change your password.
                     </p>
                     <button
                       onClick={handlePasswordReset}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold"
+                      className="px-4 py-2 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg text-sm font-semibold"
                     >
                       Send Password Reset Email
                     </button>
@@ -1623,7 +1624,7 @@ const UserDashboard = () => {
                     <h2 className="text-lg font-semibold mb-4">Session</h2>
                     <button
                       onClick={handleSignOut}
-                      className="px-4 py-2 bg-blue-800 hover:bg-blue-700 rounded-lg text-sm font-semibold flex items-center gap-2"
+                      className="px-4 py-2 bg-[#4a0c2c] hover:bg-[#6a0a2a] rounded-lg text-sm font-semibold flex items-center gap-2"
                     >
                       <LogOut size={16} /> Sign Out
                     </button>
@@ -1661,23 +1662,23 @@ const UserDashboard = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl bg-blue-900 border border-blue-400/40 shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="w-full max-w-md rounded-2xl bg-[#2a0620] border border-[#ff7ab0]/40 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/40 to-indigo-700/40 px-6 pt-6 pb-5 border-b border-white/10">
-              <div className="absolute -top-12 -right-8 w-40 h-40 bg-blue-400/25 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#e02058]/40 to-[#6a0a2a]/50 px-6 pt-6 pb-5 border-b border-white/10">
+              <div className="absolute -top-12 -right-8 w-40 h-40 bg-[#ff7ab0]/25 rounded-full blur-3xl pointer-events-none"></div>
               <div className="relative flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-950/50">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff2d6b] to-[#6a0a2a] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[#12030f]/50">
                     {initialOf(selectedMatch.name)}
                   </div>
                   <div>
                     <h2 className="text-xl font-bold">{selectedMatch.name || 'Saakhi member'}</h2>
-                  <p className="text-sm text-blue-200">
+                  <p className="text-sm text-[#ffd0e2]">
                     {[selectedMatch.age && `${selectedMatch.age} yrs`, selectedMatch.occupation]
                       .filter(Boolean).join(' • ')}
                   </p>
                   {selectedMatch.location && (
-                    <p className="text-sm text-blue-200 flex items-center">
+                    <p className="text-sm text-[#ffd0e2] flex items-center">
                       <MapPin className="w-3 h-3 mr-0.5" />{selectedMatch.location}
                       {sameCity(selectedMatch.location, profile?.location) && (
                         <span className="ml-2 text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">Same city</span>
@@ -1695,7 +1696,7 @@ const UserDashboard = () => {
             {personalityChips(selectedMatch).length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-4">
                 {personalityChips(selectedMatch).map((chip) => (
-                  <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-blue-100">
+                  <span key={chip} className="px-2.5 py-1 bg-white/10 rounded-full text-xs text-[#ffe3ef]">
                     {chip}
                   </span>
                 ))}
@@ -1703,7 +1704,7 @@ const UserDashboard = () => {
             )}
 
             {selectedMatch.moveIn && (
-              <p className="text-sm text-blue-200 mb-4">
+              <p className="text-sm text-[#ffd0e2] mb-4">
                 📅 Move-in: <span className="text-white font-medium">
                   {new Date(selectedMatch.moveIn).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
@@ -1711,7 +1712,7 @@ const UserDashboard = () => {
             )}
 
             {/* Why this score */}
-            <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wide mb-2">
+            <h3 className="text-sm font-semibold text-[#ffd0e2] uppercase tracking-wide mb-2">
               Why {selectedMatch.score}%?
             </h3>
             <div className="bg-white/5 rounded-lg px-4 py-3 mb-5 space-y-1.5 text-sm">
@@ -1726,7 +1727,7 @@ const UserDashboard = () => {
                       <p key={w} className="text-amber-300">⚠ {w}</p>
                     ))}
                     {positives.length === 0 && warnings.length === 0 && (
-                      <p className="text-blue-200">She hasn't answered the lifestyle questions yet.</p>
+                      <p className="text-[#ffd0e2]">She hasn't answered the lifestyle questions yet.</p>
                     )}
                   </>
                 );
@@ -1736,7 +1737,7 @@ const UserDashboard = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { openChatWith(selectedMatch); setSelectedMatch(null); }}
-                className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg font-semibold flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} /> Message
               </button>
@@ -1745,20 +1746,20 @@ const UserDashboard = () => {
                 className={`p-2.5 rounded-lg border transition ${
                   savedIds.includes(selectedMatch.id)
                     ? 'bg-pink-500/25 border-pink-400/60'
-                    : 'border-blue-400/30 hover:border-pink-400/60'
+                    : 'border-[#ff7ab0]/30 hover:border-pink-400/60'
                 }`}
               >
-                <Heart size={18} className={savedIds.includes(selectedMatch.id) ? 'fill-pink-400 text-pink-400' : 'text-blue-200'} />
+                <Heart size={18} className={savedIds.includes(selectedMatch.id) ? 'fill-pink-400 text-pink-400' : 'text-[#ffd0e2]'} />
               </button>
             </div>
 
             {/* Reviews */}
-            <div className="mt-4 pt-3 border-t border-blue-400/10">
+            <div className="mt-4 pt-3 border-t border-[#ff7ab0]/10">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-blue-200 uppercase tracking-wide">Reviews</h3>
+                <h3 className="text-sm font-semibold text-[#ffd0e2] uppercase tracking-wide">Reviews</h3>
                 <button
                   onClick={() => setShowRateForm((s) => !s)}
-                  className="text-sm text-blue-300 hover:underline"
+                  className="text-sm text-[#ffb3d0] hover:underline"
                 >
                   {matchReviews.some((r) => r.reviewerId === user.uid) ? 'Edit your review' : 'Rate her'}
                 </button>
@@ -1768,7 +1769,7 @@ const UserDashboard = () => {
                   <span className="text-amber-300 text-lg">
                     {'★'.repeat(Math.round(matchReviews.reduce((s, r) => s + r.stars, 0) / matchReviews.length))}
                   </span>
-                  <span className="text-sm text-blue-200 ml-2">
+                  <span className="text-sm text-[#ffd0e2] ml-2">
                     {(matchReviews.reduce((s, r) => s + r.stars, 0) / matchReviews.length).toFixed(1)} · {matchReviews.length} review{matchReviews.length > 1 ? 's' : ''}
                   </span>
                   <div className="flex flex-wrap gap-1.5 mt-2">
@@ -1780,7 +1781,7 @@ const UserDashboard = () => {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-blue-200/70 mb-2">No reviews yet.</p>
+                <p className="text-sm text-[#ffd0e2]/70 mb-2">No reviews yet.</p>
               )}
 
               {showRateForm && (
@@ -1790,7 +1791,7 @@ const UserDashboard = () => {
                       <button key={n} onClick={() => setMyStars(n)} title={`${n} star${n > 1 ? 's' : ''}`}>
                         <Star
                           size={22}
-                          className={n <= myStars ? 'fill-amber-400 text-amber-400' : 'text-blue-300/50'}
+                          className={n <= myStars ? 'fill-amber-400 text-amber-400' : 'text-[#ffb3d0]/50'}
                         />
                       </button>
                     ))}
@@ -1803,7 +1804,7 @@ const UserDashboard = () => {
                           key={t}
                           onClick={() => setMyTags(on ? myTags.filter((x) => x !== t) : [...myTags, t])}
                           className={`px-2.5 py-1 rounded-full text-xs border transition ${
-                            on ? 'bg-blue-500 border-blue-400 text-white' : 'border-blue-400/40 text-blue-200'
+                            on ? 'bg-[#ff2d6b] border-[#ff7ab0] text-white' : 'border-[#ff7ab0]/40 text-[#ffd0e2]'
                           }`}
                         >
                           {t}
@@ -1813,7 +1814,7 @@ const UserDashboard = () => {
                   </div>
                   <button
                     onClick={submitReview}
-                    className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold"
+                    className="px-4 py-1.5 bg-[#ff2d6b] hover:bg-[#e02058] rounded-lg text-sm font-semibold"
                   >
                     Save Review
                   </button>
@@ -1821,14 +1822,14 @@ const UserDashboard = () => {
               )}
             </div>
 
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-blue-400/10">
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#ff7ab0]/10">
               <button
                 onClick={() => blockAndReport(selectedMatch)}
                 className="text-sm text-red-300 hover:text-red-200 flex items-center gap-1"
               >
                 <Shield size={14} /> Report & Block
               </button>
-              <button onClick={() => setSelectedMatch(null)} className="text-sm text-blue-300 hover:underline">
+              <button onClick={() => setSelectedMatch(null)} className="text-sm text-[#ffb3d0] hover:underline">
                 Close
               </button>
             </div>

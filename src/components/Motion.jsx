@@ -8,7 +8,7 @@ export const ScrollProgress = () => {
   return (
     <motion.div
       style={{ scaleX: width }}
-      className="fixed top-0 left-0 right-0 h-1 z-50 origin-left bg-gradient-to-r from-[#c5cae9] via-white to-[#7986cb]"
+      className="fixed top-0 left-0 right-0 h-1 z-50 origin-left bg-gradient-to-r from-[#ff2d6b] via-[#ffd36b] to-[#ff7ab0]"
     />
   );
 };
@@ -40,7 +40,7 @@ export const CursorGlow = () => {
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
       style={{
-        background: `radial-gradient(340px circle at ${pos.x}px ${pos.y}px, rgba(197,202,233,0.14), transparent 70%)`,
+        background: `radial-gradient(340px circle at ${pos.x}px ${pos.y}px, rgba(255,122,176,0.16), transparent 70%)`,
       }}
     />
   );
@@ -171,7 +171,7 @@ export const RevealWords = ({ text, className = '', delay = 0 }) => (
 export const ScoreRing = ({ value = 0, size = 56, stroke = 5, label, className = '' }) => {
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
-  const color = value >= 75 ? '#34d399' : value >= 50 ? '#60a5fa' : '#94a3b8';
+  const color = value >= 75 ? '#ffd36b' : value >= 50 ? '#ff7ab0' : '#b98aa0';
 
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
@@ -191,7 +191,7 @@ export const ScoreRing = ({ value = 0, size = 56, stroke = 5, label, className =
       </svg>
       <span className="absolute inset-0 flex flex-col items-center justify-center leading-none">
         <span className="font-bold" style={{ color, fontSize: size * 0.28 }}>{value}%</span>
-        {label && <span className="text-[9px] text-blue-200 mt-0.5">{label}</span>}
+        {label && <span className="text-[9px] text-[#ffd0e2] mt-0.5">{label}</span>}
       </span>
     </div>
   );

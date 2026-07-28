@@ -170,34 +170,34 @@ const Login = ({ startInSignup = false }) => {
     <svg viewBox="0 0 400 300" style={{ width: '100%', height: '200px' }}>
       <defs>
         <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3949ab" />
-          <stop offset="50%" stopColor="#7986cb" />
-          <stop offset="100%" stopColor="#c5cae9" />
+          <stop offset="0%" stopColor="#6a0a2a" />
+          <stop offset="50%" stopColor="#ff2d6b" />
+          <stop offset="100%" stopColor="#ffb3d0" />
         </linearGradient>
         <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c5cae9" />
-          <stop offset="100%" stopColor="#7986cb" />
+          <stop offset="0%" stopColor="#ffb3d0" />
+          <stop offset="100%" stopColor="#ff2d6b" />
         </linearGradient>
       </defs>
       
       {/* Background circles */}
-      <circle cx="100" cy="150" r="80" fill="#c5cae9" opacity="0.6" />
-      <circle cx="300" cy="100" r="60" fill="#7986cb" opacity="0.4" />
+      <circle cx="100" cy="150" r="80" fill="#ffb3d0" opacity="0.6" />
+      <circle cx="300" cy="100" r="60" fill="#ff2d6b" opacity="0.4" />
       
       {/* Woman silhouettes */}
       <g transform="translate(50, 80)">
         <path d="M50 40 C50 20, 70 10, 90 40 L90 60 C90 80, 80 90, 70 100 L70 180 L30 180 L30 100 C20 90, 10 80, 10 60 L10 40 Z" 
-              fill="#3949ab" opacity="0.9" />
+              fill="#6a0a2a" opacity="0.9" />
       </g>
       
       <g transform="translate(150, 60)">
         <path d="M40 30 C40 15, 55 5, 75 30 L75 50 C75 70, 65 80, 55 90 L55 170 L25 170 L25 90 C15 80, 5 70, 5 50 L5 30 Z" 
-              fill="#7986cb" opacity="0.8" />
+              fill="#ff2d6b" opacity="0.8" />
       </g>
       
       <g transform="translate(250, 90)">
         <path d="M45 35 C45 18, 62 8, 82 35 L82 55 C82 75, 72 85, 62 95 L62 175 L28 175 L28 95 C18 85, 8 75, 8 55 L8 35 Z" 
-              fill="#c5cae9" opacity="0.7" />
+              fill="#ffb3d0" opacity="0.7" />
       </g>
     </svg>
   );
@@ -206,16 +206,16 @@ const Login = ({ startInSignup = false }) => {
     <svg viewBox="0 0 200 200" style={{ width: '60px', height: '60px', marginBottom: '20px' }}>
       <defs>
         <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c5cae9" />
-          <stop offset="100%" stopColor="#7986cb" />
+          <stop offset="0%" stopColor="#ffb3d0" />
+          <stop offset="100%" stopColor="#ff2d6b" />
         </linearGradient>
       </defs>
       
-      <path d="M100 20 L170 80 L170 170 L30 170 L30 80 Z" fill="#c5cae9" opacity="0.9" />
-      <rect x="60" y="120" width="30" height="40" fill="#3949ab" opacity="0.8" />
-      <rect x="110" y="100" width="25" height="25" fill="#3949ab" opacity="0.8" />
-      <rect x="140" y="100" width="25" height="25" fill="#3949ab" opacity="0.8" />
-      <path d="M100 20 L170 80 L30 80 Z" fill="#3949ab" />
+      <path d="M100 20 L170 80 L170 170 L30 170 L30 80 Z" fill="#ffb3d0" opacity="0.9" />
+      <rect x="60" y="120" width="30" height="40" fill="#6a0a2a" opacity="0.8" />
+      <rect x="110" y="100" width="25" height="25" fill="#6a0a2a" opacity="0.8" />
+      <rect x="140" y="100" width="25" height="25" fill="#6a0a2a" opacity="0.8" />
+      <path d="M100 20 L170 80 L30 80 Z" fill="#6a0a2a" />
     </svg>
   );
 
@@ -333,7 +333,7 @@ const Login = ({ startInSignup = false }) => {
                   />
                   <span
                     onClick={() => setShowPassword((v) => !v)}
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#3949ab' }}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#6a0a2a' }}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </span>
@@ -355,7 +355,7 @@ const Login = ({ startInSignup = false }) => {
                       />
                       <span
                         onClick={() => setShowConfirmPassword((v) => !v)}
-                        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#3949ab' }}
+                        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#6a0a2a' }}
                       >
                         {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </span>
@@ -450,11 +450,11 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-    backgroundColor: '#3949ab'
+    backgroundColor: '#6a0a2a'
   },
   leftPanel: {
     flex: 1,
-    background: 'linear-gradient(135deg, #283593 0%, #3949ab 50%, #5c6bc0 100%)',
+    background: 'linear-gradient(135deg, #2a0620 0%, #6a0a2a 50%, #a01844 100%)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start', // lift content up
@@ -502,8 +502,8 @@ const styles = {
   },
   featureIcon: {
     fontSize: '1.5rem',
-    backgroundColor: '#c5cae9',
-    color: '#3949ab',
+    backgroundColor: '#ffb3d0',
+    color: '#6a0a2a',
     padding: '10px',
     borderRadius: '50%',
     width: '40px',
@@ -518,7 +518,7 @@ const styles = {
     alignItems: 'flex-start', // align content to top
     justifyContent: 'center',
     padding: '40px',
-    backgroundColor: '#e8eaf6',
+    backgroundColor: '#ffe3ef',
     height: '100vh',
     overflowY: 'auto',
   },
@@ -529,11 +529,11 @@ const styles = {
     width: '100%',
     maxWidth: '450px',
     boxShadow: '0 20px 40px rgba(57, 73, 171, 0.15)',
-    border: '2px solid #7986cb',
+    border: '2px solid #ff2d6b',
   },
   toggleContainer: {
     display: 'flex',
-    backgroundColor: '#e8eaf6',
+    backgroundColor: '#ffe3ef',
     borderRadius: '12px',
     padding: '6px',
     marginBottom: '30px',
@@ -552,14 +552,14 @@ const styles = {
     zIndex: 1
   },
   activeToggle: {
-    backgroundColor: '#3949ab',
+    backgroundColor: '#6a0a2a',
     color: 'white',
     transform: 'translateY(-2px)',
     boxShadow: '0 4px 12px rgba(57, 73, 171, 0.3)'
   },
   inactiveToggle: {
     backgroundColor: 'transparent',
-    color: '#3949ab'
+    color: '#6a0a2a'
   },
   formContainer: {
     textAlign: 'center'
@@ -567,7 +567,7 @@ const styles = {
   formTitle: {
     fontSize: '1.8rem',
     fontWeight: '700',
-    color: '#3949ab',
+    color: '#6a0a2a',
     marginBottom: '8px'
   },
   formSubtitle: {
@@ -591,7 +591,7 @@ const styles = {
   input: {
     width: '100%',
     padding: '15px 20px',
-    border: '2px solid #7986cb',
+    border: '2px solid #ff2d6b',
     borderRadius: '12px',
     fontSize: '1rem',
     transition: 'all 0.3s ease',
@@ -603,7 +603,7 @@ const styles = {
     marginTop: '-10px'
   },
   forgotLink: {
-    color: '#3949ab',
+    color: '#6a0a2a',
     textDecoration: 'none',
     fontSize: '0.9rem',
     fontWeight: '500'
@@ -611,7 +611,7 @@ const styles = {
   submitButton: {
     width: '100%',
     padding: '16px',
-    backgroundColor: '#3949ab',
+    backgroundColor: '#6a0a2a',
     color: 'white',
     border: 'none',
     borderRadius: '12px',
@@ -625,7 +625,7 @@ const styles = {
     width: '100%',
     padding: '14px',
     marginTop: '12px',
-    backgroundColor: '#7986cb',
+    backgroundColor: '#ff2d6b',
     color: 'white',
     border: 'none',
     borderRadius: '12px',
@@ -668,7 +668,7 @@ const styles = {
     margin: 0
   },
   link: {
-    color: '#3949ab',
+    color: '#6a0a2a',
     textDecoration: 'none',
     fontWeight: '500'
   }
@@ -682,7 +682,7 @@ styleSheet.textContent = `
   }
   
   input:focus {
-    border-color: #3949ab !important;
+    border-color: #6a0a2a !important;
     box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.1) !important;
   }
   
@@ -692,12 +692,12 @@ styleSheet.textContent = `
   }
   
   .google-button:hover {
-    border-color: #3949ab !important;
+    border-color: #6a0a2a !important;
     background: #fafafa !important;
   }
   
   .submit-button:hover {
-    background-color: #303f9f !important;
+    background-color: #8a1038 !important;
   }
   
   a:hover {

@@ -11,14 +11,14 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#283593]/50 backdrop-blur-md pt-16 pb-8 border-t border-white/10">
-      <div className="container mx-auto px-4">
+    <footer className="bg-[#2a0620]/50 backdrop-blur-md pt-16 pb-8 border-t border-white/10">
+      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <h2 className="text-2xl font-bold mb-4">
-              <span className="text-[#c5cae9]">Saakhi</span>
+              <span className="text-[#ffb3d0]">Saakhi</span>
             </h2>
-            <p className="text-[#e8eaf6]">
+            <p className="text-[#ffe3ef]">
               Finding your perfect roommate has never been easier. Trust Saakhi for safe, compatible matches.
             </p>
           </div>
@@ -27,22 +27,22 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4">Explore</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="text-[#c5cae9] hover:text-white transition-colors">
+                <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="text-[#ffb3d0] hover:text-white transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className="text-[#c5cae9] hover:text-white transition-colors">
+                <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className="text-[#ffb3d0] hover:text-white transition-colors">
                   How It Works
                 </a>
               </li>
               <li>
-                <a href="#about" onClick={(e) => scrollToSection(e, 'about')} className="text-[#c5cae9] hover:text-white transition-colors">
+                <a href="#about" onClick={(e) => scrollToSection(e, 'about')} className="text-[#ffb3d0] hover:text-white transition-colors">
                   About
                 </a>
               </li>
               <li>
-                <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="text-[#c5cae9] hover:text-white transition-colors">
+                <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="text-[#ffb3d0] hover:text-white transition-colors">
                   FAQ
                 </a>
               </li>
@@ -53,12 +53,12 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4">Account</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/login" className="text-[#c5cae9] hover:text-white transition-colors">
+                <Link to="/login" className="text-[#ffb3d0] hover:text-white transition-colors">
                   Sign In
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-[#c5cae9] hover:text-white transition-colors">
+                <Link to="/register" className="text-[#ffb3d0] hover:text-white transition-colors">
                   Create Account
                 </Link>
               </li>
@@ -71,7 +71,7 @@ const Footer = () => {
               <li>
                 <a
                   href="mailto:tanishagarg1208@gmail.com"
-                  className="text-[#c5cae9] hover:text-white transition-colors"
+                  className="text-[#ffb3d0] hover:text-white transition-colors"
                 >
                   Email Us
                 </a>
@@ -81,7 +81,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-white/10 text-center">
-          <p className="text-[#c5cae9]">
+          <p className="text-[#ffb3d0]">
             © {new Date().getFullYear()} Saakhi. All rights reserved. Created by Tanisha.
           </p>
         </div>

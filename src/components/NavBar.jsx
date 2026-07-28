@@ -27,13 +27,13 @@ const NavBar = () => {
   };
   
   return (
-    <header className="sticky top-0 z-30 bg-[#283593]/80 backdrop-blur-md border-b border-white/10">
-      <div className="container mx-auto px-4">
+    <header className="sticky top-0 z-30 bg-[#2a0620]/80 backdrop-blur-md border-b border-white/10">
+      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-white">
-                <span className="text-[#c5cae9]">Saakhi</span>
+                <span className="text-[#ffb3d0]">Saakhi</span>
               </span>
             </Link>
           </div>
@@ -41,19 +41,19 @@ const NavBar = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => scrollToSection('features')} 
-              className="text-[#e8eaf6] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+              className="text-[#ffe3ef] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
             >
               Features
             </button>
             <button 
               onClick={() => scrollToSection('how-it-works')} 
-              className="text-[#e8eaf6] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+              className="text-[#ffe3ef] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
             >
               How It Works
             </button>
             <button 
               onClick={() => scrollToSection('about')} 
-              className="text-[#e8eaf6] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+              className="text-[#ffe3ef] hover:text-white transition-colors bg-transparent border-none cursor-pointer"
             >
               About
             </button>
@@ -63,18 +63,18 @@ const NavBar = () => {
             {user ? (
               <Link
                 to="/dashboard"
-                className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors font-medium flex items-center gap-2"
+                className="px-4 py-2 bg-white text-[#6a0a2a] rounded-lg hover:bg-[#ffe3ef] transition-colors font-medium flex items-center gap-2"
               >
                 <LayoutDashboard size={16} /> Dashboard
               </Link>
             ) : (
               <>
-                <Link to="/login" className="px-4 py-2 text-white hover:text-[#c5cae9] transition-colors">
+                <Link to="/login" className="px-4 py-2 text-white hover:text-[#ffb3d0] transition-colors">
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors font-medium"
+                  className="px-4 py-2 bg-white text-[#6a0a2a] rounded-lg hover:bg-[#ffe3ef] transition-colors font-medium"
                 >
                   Get Started
                 </Link>
@@ -86,7 +86,7 @@ const NavBar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:text-[#c5cae9]"
+              className="text-white hover:text-[#ffb3d0]"
             >
               {isMenuOpen ? (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,37 +107,37 @@ const NavBar = () => {
             <div className="flex flex-col space-y-4">
               <button 
                 onClick={() => scrollToSection('features')} 
-                className="text-[#e8eaf6] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
+                className="text-[#ffe3ef] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
               >
                 Features
               </button>
               <button 
                 onClick={() => scrollToSection('how-it-works')} 
-                className="text-[#e8eaf6] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
+                className="text-[#ffe3ef] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
               >
                 How It Works
               </button>
               <button 
                 onClick={() => scrollToSection('about')} 
-                className="text-[#e8eaf6] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
+                className="text-[#ffe3ef] hover:text-white transition-colors text-left bg-transparent border-none cursor-pointer"
               >
                 About
               </button>
               {user ? (
                 <Link
                   to="/dashboard"
-                  className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors inline-flex items-center gap-2 w-max"
+                  className="px-4 py-2 bg-white text-[#6a0a2a] rounded-lg hover:bg-[#ffe3ef] transition-colors inline-flex items-center gap-2 w-max"
                 >
                   <LayoutDashboard size={16} /> Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link to="/login" className="text-[#e8eaf6] hover:text-white transition-colors">
+                  <Link to="/login" className="text-[#ffe3ef] hover:text-white transition-colors">
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="px-4 py-2 bg-white text-[#3949ab] rounded-lg hover:bg-[#e8eaf6] transition-colors inline-block w-max"
+                    className="px-4 py-2 bg-white text-[#6a0a2a] rounded-lg hover:bg-[#ffe3ef] transition-colors inline-block w-max"
                   >
                     Get Started
                   </Link>

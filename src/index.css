@@ -2,18 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Storm palette — deep plum bg, crimson core, hot-pink mid, gold rim */
 :root {
-  --primary-blue: #3949ab;
-  --secondary-blue: #283593;
-  --periwinkle: #7986cb;
-  --light-lavender: #e8eaf6;
-  --pale-lavender: #c5cae9;
+  --storm-bg: #1a0418;
+  --storm-core: #6a0a2a;
+  --storm-mid: #ff2d6b;
+  --storm-rim: #ffd36b;
+  --storm-soft: #ff7ab0;
+
+  /* legacy names kept so existing rules pick up the new theme */
+  --primary-blue: #ff2d6b;
+  --secondary-blue: #6a0a2a;
+  --periwinkle: #ff7ab0;
+  --light-lavender: #ffe3ef;
+  --pale-lavender: #ffb3d0;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
+  background: var(--storm-bg);
+  color: #ffe3ef;
 }
 
 /* Custom scrollbar */
@@ -75,7 +85,7 @@ body {
   50% { background-position: 100% 50%; }
 }
 .text-gradient-animated {
-  background: linear-gradient(90deg, #c5cae9, #9fa8da, #ffffff, #9fa8da, #c5cae9);
+  background: linear-gradient(90deg, #ffb3d0, #ff7ab0, #ffffff, #ff7ab0, #ffb3d0);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -142,6 +152,58 @@ body {
   }
 }
 
+/* ===== KPI card effects ===== */
+
+/* Mirror hall — a fading reflection under the card */
+.kpi-mirror { position: relative; }
+.kpi-mirror .kpi-reflection {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 100%;
+  height: 55%;
+  transform: scaleY(-1);
+  transform-origin: top;
+  opacity: 0.22;
+  filter: blur(1.5px);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 70%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 70%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.kpi-mirror:hover .kpi-reflection { opacity: 0.4; }
+
+/* Slipstream — a light streak that rips across on hover */
+.kpi-slipstream { position: relative; overflow: hidden; }
+.kpi-slipstream::before {
+  content: '';
+  position: absolute;
+  inset: -40% -120%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 211, 107, 0.35) 50%, transparent 58%);
+  transform: translateX(-60%);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  pointer-events: none;
+}
+.kpi-slipstream:hover::before { transform: translateX(60%); opacity: 1; }
+
+/* Cascade — layered "stacked cards" edge that fans out on hover */
+.kpi-cascade { position: relative; }
+.kpi-cascade::after,
+.kpi-cascade::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 122, 176, 0.35);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.kpi-cascade:hover::before { transform: translate(6px, 6px) rotate(1.2deg); opacity: 0.8; }
+.kpi-cascade:hover::after { transform: translate(12px, 12px) rotate(2.4deg); opacity: 0.45; }
+
 /* Glass card with a gradient hairline border */
 .glass-card {
   position: relative;
@@ -166,7 +228,7 @@ body {
   right: 12%;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, transparent, #90caf9, #c5cae9, transparent);
+  background: linear-gradient(90deg, transparent, #90caf9, #ffb3d0, transparent);
   opacity: 0;
   transition: opacity 0.35s ease;
 }

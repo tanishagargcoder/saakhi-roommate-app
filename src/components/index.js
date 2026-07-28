@@ -7,6 +7,7 @@ export { default as Impact } from './Impact';
 export { default as CTA } from './CTA';
 export { default as Footer } from './Footer';
 export { default as ProtectiveShieldBackground } from './ProtectiveShieldBackground';
+export { default as StormBackground, STORM } from './StormBackground';
 export {
   ScrollProgress, CursorGlow, TiltCard, MagneticButton, CountUp, RevealWords, RotatingWord, ScoreRing
 } from './Motion';

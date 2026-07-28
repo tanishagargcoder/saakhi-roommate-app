@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
-  NavBar, Footer, ScrollProgress, CursorGlow, TiltCard, MagneticButton, CountUp, RevealWords, RotatingWord
+  NavBar, Footer, ScrollProgress, CursorGlow, TiltCard, MagneticButton, CountUp, RevealWords, RotatingWord,
+  StormBackground
 } from './components';
 
 const MARQUEE_ITEMS = [
@@ -14,7 +15,8 @@ const MARQUEE_ITEMS = [
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
+  // amount 0 → fires as soon as any sliver is visible, so tall sections never stay hidden
+  viewport: { once: true, amount: 0, margin: '0px 0px -40px 0px' },
   transition: { duration: 0.55, ease: 'easeOut' },
 };
 
@@ -44,44 +46,61 @@ const FAQS = [
 const Landing = () => {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState(null);
+  const { scrollYProgress } = useScroll();
+
+  // The storm owns the hero, then recedes so the rest of the page stays readable.
+  const stormOpacity = useTransform(scrollYProgress, [0, 0.14, 0.3], [1, 0.55, 0.18]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#283593] via-[#3949ab] to-[#5c6bc0] text-white overflow-x-hidden">
+    <div className="relative min-h-screen text-white overflow-x-hidden">
+      {/* Live plasma-storm backdrop — hero only, fades back as you scroll */}
+      <motion.div style={{ opacity: stormOpacity }} className="fixed inset-0 z-0 pointer-events-none">
+        <StormBackground interactive />
+      </motion.div>
+      <div className="relative z-10">
       <ScrollProgress />
       <NavBar />
 
       <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden container mx-auto px-4 py-16 flex flex-col items-center">
+        <section className="relative overflow-hidden w-full px-6 md:px-10 py-16 flex flex-col items-center min-h-[92vh] justify-center">
           <CursorGlow />
-          <div className="aurora -top-32 -left-32 w-[420px] h-[420px] bg-[#7986cb]/40 pointer-events-none"></div>
-          <div className="aurora top-40 -right-24 w-[380px] h-[380px] bg-[#c5cae9]/25 pointer-events-none" style={{ animationDelay: '-7s' }}></div>
-          <div className="aurora bottom-0 left-1/3 w-[340px] h-[340px] bg-[#5c6bc0]/35 pointer-events-none" style={{ animationDelay: '-14s' }}></div>
 
-          <div className="relative z-10 text-center max-w-4xl mx-auto mb-12">
+          <div className="relative z-10 text-center max-w-5xl mx-auto mb-12">
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#e8eaf6] text-sm font-medium mb-6 backdrop-blur-sm"
+              transition={{ duration: 0.7, delay: 1.4 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#ffe3ef] text-sm font-medium mb-6 backdrop-blur-sm"
             >
-              <span className="w-2 h-2 rounded-full bg-[#a5d6a7] pulse-dot"></span>
+              <span className="w-2 h-2 rounded-full bg-[#ffd36b] pulse-dot"></span>
               India's women-only roommate finder
             </motion.span>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              <RevealWords text="Find Your Perfect" />
-              <br />
-              <span className="text-gradient-animated">
-                <RevealWords text="Roommate" delay={0.3} />
-              </span>
-            </h1>
+            {/* Storm lands first (~1.6s), then the wordmark drifts in slowly */}
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.94, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 1.6, delay: 1.6, ease: [0.22, 1, 0.36, 1] }}
+              className="text-5xl md:text-8xl font-bold text-white mb-3 leading-[1.05] tracking-tight"
+            >
+              <span className="text-gradient-animated">Saakhi</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.1, delay: 2.5, ease: 'easeOut' }}
+              className="text-2xl md:text-4xl font-semibold text-[#ffe3ef] mb-6 tracking-wide"
+            >
+              Find Your Perfect Roommate
+            </motion.p>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-xl text-[#e8eaf6] mb-2 max-w-2xl mx-auto"
+              transition={{ delay: 3.0, duration: 0.9 }}
+              className="text-xl text-[#ffe3ef] mb-2 max-w-2xl mx-auto"
             >
               Saakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
             </motion.p>
@@ -89,8 +108,8 @@ const Landing = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.75, duration: 0.6 }}
-              className="text-lg text-[#c5cae9] mb-8"
+              transition={{ delay: 3.3, duration: 0.9 }}
+              className="text-lg text-[#ffb3d0] mb-8"
             >
               Matched on{' '}
               <RotatingWord
@@ -102,12 +121,12 @@ const Landing = () => {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.85, duration: 0.5 }}
+              transition={{ delay: 3.6, duration: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <MagneticButton
                 onClick={() => navigate('/register')}
-                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#1a237e]/40"
+                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#12030f]/40"
               >
                 Get Started — it's free →
               </MagneticButton>
@@ -122,8 +141,8 @@ const Landing = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.6 }}
-              className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#c5cae9]"
+              transition={{ delay: 3.9, duration: 0.8 }}
+              className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#ffb3d0]"
             >
               <span>🛡️ Verified profiles</span>
               <span>👩 Women-only community</span>
@@ -134,16 +153,16 @@ const Landing = () => {
           <motion.div
             initial={{ opacity: 0, y: 40, rotateX: 12 }}
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+            transition={{ duration: 1.2, delay: 4.1, ease: 'easeOut' }}
             className="relative z-10 w-full max-w-4xl animate-float"
           >
             <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
               {/* Mock browser bar */}
               <div className="flex items-center gap-2 px-4 py-3 bg-white/10 border-b border-white/10">
-                <span className="w-3 h-3 rounded-full bg-[#ef9a9a]"></span>
-                <span className="w-3 h-3 rounded-full bg-[#ffe082]"></span>
-                <span className="w-3 h-3 rounded-full bg-[#a5d6a7]"></span>
-                <div className="ml-4 flex-1 max-w-xs px-3 py-1 bg-white/10 rounded-full text-xs text-[#c5cae9] text-center">
+                <span className="w-3 h-3 rounded-full bg-[#ff2d6b]"></span>
+                <span className="w-3 h-3 rounded-full bg-[#ffd36b]"></span>
+                <span className="w-3 h-3 rounded-full bg-[#ffd36b]"></span>
+                <div className="ml-4 flex-1 max-w-xs px-3 py-1 bg-white/10 rounded-full text-xs text-[#ffb3d0] text-center">
                   saakhi.app/matches
                 </div>
               </div>
@@ -153,18 +172,18 @@ const Landing = () => {
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <div className="text-white font-semibold">Your Top Matches</div>
-                    <div className="text-xs text-[#c5cae9]">Based on lifestyle & preferences</div>
+                    <div className="text-xs text-[#ffb3d0]">Based on lifestyle & preferences</div>
                   </div>
-                  <div className="px-3 py-1 bg-[#7986cb]/40 rounded-full text-xs text-[#e8eaf6] flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#a5d6a7] pulse-dot"></span> 3 new today
+                  <div className="px-3 py-1 bg-[#ff2d6b]/40 rounded-full text-xs text-[#ffe3ef] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ffd36b] pulse-dot"></span> 3 new today
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
-                    { initial: 'A', match: '95%', from: '#7986cb', to: '#3949ab' },
-                    { initial: 'P', match: '91%', from: '#9fa8da', to: '#5c6bc0' },
-                    { initial: 'R', match: '88%', from: '#c5cae9', to: '#7986cb' }
+                    { initial: 'A', match: '95%', from: '#ff2d6b', to: '#6a0a2a' },
+                    { initial: 'P', match: '91%', from: '#ff7ab0', to: '#a01844' },
+                    { initial: 'R', match: '88%', from: '#ffb3d0', to: '#ff2d6b' }
                   ].map((card, index) => (
                     <motion.div
                       key={index}
@@ -181,13 +200,13 @@ const Landing = () => {
                         >
                           {card.initial}
                         </div>
-                        <span className="px-2 py-0.5 bg-[#a5d6a7]/20 text-[#a5d6a7] rounded-full text-xs font-semibold">
+                        <span className="px-2 py-0.5 bg-[#ffd36b]/20 text-[#ffd36b] rounded-full text-xs font-semibold">
                           {card.match} match
                         </span>
                       </div>
                       <div className="h-2.5 skeleton-bar rounded-full w-3/4 mb-2"></div>
                       <div className="h-2.5 skeleton-bar rounded-full w-1/2 mb-3"></div>
-                      <span className="inline-block px-2 py-0.5 bg-white/10 rounded-full text-xs text-[#c5cae9]">
+                      <span className="inline-block px-2 py-0.5 bg-white/10 rounded-full text-xs text-[#ffb3d0]">
                         ✓ Verified
                       </span>
                     </motion.div>
@@ -199,12 +218,12 @@ const Landing = () => {
         </section>
 
         {/* Infinite marquee of what Saakhi does */}
-        <section className="py-5 bg-[#283593]/60 border-y border-white/10 overflow-hidden marquee-wrap">
+        <section className="py-5 bg-[#2a0620]/60 border-y border-white/10 overflow-hidden marquee-wrap">
           <div className="marquee-track gap-3">
             {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
               <span
                 key={i}
-                className="px-4 py-1.5 bg-white/5 border border-white/15 rounded-full text-sm text-[#e8eaf6] whitespace-nowrap"
+                className="px-4 py-1.5 bg-white/5 border border-white/15 rounded-full text-sm text-[#ffe3ef] whitespace-nowrap"
               >
                 {item}
               </span>
@@ -212,26 +231,41 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* Stats band with counters */}
-        <section className="py-14">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        {/* KPI band — mirror hall + slipstream + cascade */}
+        <section className="py-20 px-6 md:px-10">
+          <div className="w-full max-w-[1400px] mx-auto">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
               {[
-                { value: 9, suffix: '', label: 'Lifestyle questions' },
-                { value: 100, suffix: '%', label: 'Women-only' },
-                { value: 0, prefix: '₹', suffix: '', label: 'Cost, forever' },
-                { value: 24, suffix: '/7', label: 'Private chat' },
+                { value: 9, suffix: '', label: 'Lifestyle questions', icon: '🧩' },
+                { value: 100, suffix: '%', label: 'Women-only', icon: '👩' },
+                { value: 0, prefix: '₹', suffix: '', label: 'Cost, forever', icon: '💸' },
+                { value: 24, suffix: '/7', label: 'Private chat', icon: '💬' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: i * 0.1 }}
-                  className="sakhi-card glow-hover p-5 text-center"
+                  initial={{ opacity: 0, y: 40, rotateX: 18 }}
+                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                  viewport={{ once: true, amount: 0 }}
+                  transition={{ duration: 0.7, delay: i * 0.14, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -10, scale: 1.03 }}
+                  className="kpi-mirror"
+                  style={{ perspective: 1000 }}
                 >
-                  <div className="text-4xl font-bold text-gradient-animated">
-                    <CountUp to={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix} />
+                  <div className="kpi-slipstream kpi-cascade glass-card accent-top p-6 text-center relative">
+                    <div className="text-3xl mb-2">{stat.icon}</div>
+                    <div className="text-4xl md:text-5xl font-bold text-gradient-animated">
+                      <CountUp to={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix} />
+                    </div>
+                    <div className="text-sm text-[#ffb3d0] mt-2">{stat.label}</div>
                   </div>
-                  <div className="text-sm text-[#c5cae9] mt-1">{stat.label}</div>
+                  {/* reflection copy */}
+                  <div className="kpi-reflection glass-card p-6 text-center" aria-hidden="true">
+                    <div className="text-3xl mb-2">{stat.icon}</div>
+                    <div className="text-4xl md:text-5xl font-bold text-[#ff7ab0]">
+                      {stat.prefix || ''}{stat.value}{stat.suffix}
+                    </div>
+                    <div className="text-sm text-[#ffb3d0] mt-2">{stat.label}</div>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -239,13 +273,13 @@ const Landing = () => {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="relative py-16 bg-[#3949ab]/50 bg-dots scroll-mt-16 overflow-hidden">
-          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#7986cb]/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="container mx-auto px-4">
+        <section id="features" className="relative py-16 bg-[#6a0a2a]/50 bg-dots scroll-mt-16 overflow-hidden">
+          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#ff2d6b]/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Features</span>
+              <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">Features</span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">Why Choose Saakhi?</h2>
-              <p className="text-lg text-[#c5cae9] max-w-2xl mx-auto mt-3">
+              <p className="text-lg text-[#ffb3d0] max-w-2xl mx-auto mt-3">
                 Everything you need to find a roommate you'll actually get along with
               </p>
             </motion.div>
@@ -277,7 +311,7 @@ const Landing = () => {
                     <motion.div
                       whileHover={{ rotate: [0, -12, 12, 0], scale: 1.12 }}
                       transition={{ duration: 0.5 }}
-                      className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#3949ab] to-[#7986cb] flex items-center justify-center text-3xl mb-4 shadow-lg"
+                      className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#6a0a2a] to-[#ff2d6b] flex items-center justify-center text-3xl mb-4 shadow-lg"
                       style={{ transform: 'translateZ(40px)' }}
                     >
                       {feature.icon}
@@ -285,7 +319,7 @@ const Landing = () => {
                     <h3 className="text-xl font-semibold text-white mb-2" style={{ transform: 'translateZ(25px)' }}>
                       {feature.title}
                     </h3>
-                    <p className="text-[#e8eaf6]" style={{ transform: 'translateZ(15px)' }}>
+                    <p className="text-[#ffe3ef]" style={{ transform: 'translateZ(15px)' }}>
                       {feature.description}
                     </p>
                   </TiltCard>
@@ -297,11 +331,11 @@ const Landing = () => {
         
         {/* How It Works Section */}
         <section id="how-it-works" className="py-16 scroll-mt-16">
-          <div className="container mx-auto px-4">
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Process</span>
+              <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">Process</span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">How It Works</h2>
-              <p className="text-lg text-[#c5cae9] max-w-2xl mx-auto mt-3">
+              <p className="text-lg text-[#ffb3d0] max-w-2xl mx-auto mt-3">
                 Finding your perfect roommate is just a few simple steps away
               </p>
             </motion.div>
@@ -311,9 +345,9 @@ const Landing = () => {
               <motion.div
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
+                viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 1.1, ease: 'easeInOut' }}
-                className="hidden md:block absolute top-0 left-[12%] right-[12%] h-0.5 origin-left bg-gradient-to-r from-[#7986cb] via-[#c5cae9] to-[#7986cb]"
+                className="hidden md:block absolute top-0 left-[12%] right-[12%] h-0.5 origin-left bg-gradient-to-r from-[#ff2d6b] via-[#ffb3d0] to-[#ff2d6b]"
               />
               {[
                 {
@@ -341,7 +375,7 @@ const Landing = () => {
                   key={index}
                   initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-60px' }}
+                  viewport={{ once: true, amount: 0, margin: '0px 0px -40px 0px' }}
                   transition={{ duration: 0.5, delay: 0.25 + index * 0.15, ease: 'easeOut' }}
                   whileHover={{ y: -8 }}
                   className="sakhi-card shine-card glow-hover p-6 text-center relative"
@@ -352,13 +386,13 @@ const Landing = () => {
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.35 + index * 0.15 }}
-                      className="w-11 h-11 rounded-full bg-gradient-to-br from-[#3949ab] to-[#7986cb] border border-[#c5cae9]/40 flex items-center justify-center text-white font-bold shadow-lg"
+                      className="w-11 h-11 rounded-full bg-gradient-to-br from-[#6a0a2a] to-[#ff2d6b] border border-[#ffb3d0]/40 flex items-center justify-center text-white font-bold shadow-lg"
                     >
                       {item.step}
                     </motion.div>
                   </div>
                   <h3 className="text-xl font-semibold text-white mt-4 mb-2">{item.title}</h3>
-                  <p className="text-[#e8eaf6]">{item.description}</p>
+                  <p className="text-[#ffe3ef]">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -372,31 +406,31 @@ const Landing = () => {
         </section>
         
         {/* About Section */}
-        <section id="about" className="relative py-16 bg-[#3949ab]/50 bg-dots scroll-mt-16 overflow-hidden">
-          <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#c5cae9]/15 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="container mx-auto px-4">
+        <section id="about" className="relative py-16 bg-[#6a0a2a]/50 bg-dots scroll-mt-16 overflow-hidden">
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#ffb3d0]/15 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">Our Story</span>
+              <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">Our Story</span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">About Saakhi</h2>
             </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <p className="text-lg text-[#e8eaf6] mb-6">
+                <p className="text-lg text-[#ffe3ef] mb-6">
                   Saakhi is India's first AI-powered roommate matching platform exclusively for women. 
                   We understand the challenges women face in finding safe, compatible living arrangements.
                 </p>
-                <p className="text-lg text-[#e8eaf6] mb-6">
+                <p className="text-lg text-[#ffe3ef] mb-6">
                   Our mission is to create a trustworthy community where women can find roommates 
                   who match their lifestyle, preferences, and personalities.
                 </p>
-                <p className="text-lg text-[#e8eaf6]">
+                <p className="text-lg text-[#ffe3ef]">
                   With advanced algorithms and a focus on safety, we're revolutionizing how women 
                   find their perfect roommates and creating harmonious living situations.
                 </p>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-[#7986cb]/30">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-[#ff2d6b]/30">
                 <h3 className="text-xl font-semibold text-white mb-4">Our Commitment</h3>
                 <ul className="space-y-3">
                   {[
@@ -407,8 +441,8 @@ const Landing = () => {
                     "Supportive community of women"
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
-                      <div className="text-[#c5cae9] mr-2">✓</div>
-                      <span className="text-[#e8eaf6]">{item}</span>
+                      <div className="text-[#ffb3d0] mr-2">✓</div>
+                      <span className="text-[#ffe3ef]">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -419,11 +453,11 @@ const Landing = () => {
         
         {/* FAQ Section */}
         <section id="faq" className="py-16 scroll-mt-16">
-          <div className="container mx-auto px-4 max-w-3xl">
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10 max-w-3xl">
             <motion.div {...fadeUp} className="text-center mb-12">
-              <span className="inline-block px-4 py-1 bg-[#7986cb]/40 rounded-full text-[#c5cae9] text-sm font-medium mb-4">FAQ</span>
+              <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">FAQ</span>
               <h2 className="text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2>
-              <p className="text-lg text-[#c5cae9] mt-3">Everything you might be wondering about Saakhi</p>
+              <p className="text-lg text-[#ffb3d0] mt-3">Everything you might be wondering about Saakhi</p>
             </motion.div>
 
             <div className="space-y-3">
@@ -432,7 +466,7 @@ const Landing = () => {
                   key={index}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
+                  viewport={{ once: true, amount: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.07 }}
                   className="sakhi-card glow-hover overflow-hidden"
                 >
@@ -444,7 +478,7 @@ const Landing = () => {
                     <motion.span
                       animate={{ rotate: openFaq === index ? 135 : 0 }}
                       transition={{ duration: 0.25 }}
-                      className="text-[#c5cae9] text-2xl leading-none flex-shrink-0"
+                      className="text-[#ffb3d0] text-2xl leading-none flex-shrink-0"
                     >
                       +
                     </motion.span>
@@ -458,7 +492,7 @@ const Landing = () => {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <p className="px-5 pb-4 text-[#e8eaf6]">{faq.a}</p>
+                        <p className="px-5 pb-4 text-[#ffe3ef]">{faq.a}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -470,28 +504,29 @@ const Landing = () => {
 
         {/* CTA Section */}
         <section className="py-16">
-          <div className="container mx-auto px-4">
+          <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div
               {...fadeUp}
-              className="max-w-4xl mx-auto text-center rounded-3xl bg-gradient-to-br from-[#283593] to-[#3949ab] border border-[#7986cb]/40 px-6 py-14 shadow-2xl"
+              className="max-w-4xl mx-auto text-center rounded-3xl bg-gradient-to-br from-[#2a0620] to-[#6a0a2a] border border-[#ff2d6b]/40 px-6 py-14 shadow-2xl"
             >
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Roommate?</h2>
-              <p className="text-xl text-[#e8eaf6] mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-[#ffe3ef] mb-8 max-w-2xl mx-auto">
                 Join Saakhi today and start your journey to harmonious co-living.
               </p>
               <MagneticButton
                 onClick={() => navigate('/register')}
-                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#1a237e]/40"
+                className="sakhi-button-primary text-lg px-8 py-3 shadow-xl shadow-[#12030f]/40"
               >
                 Get Started Now →
               </MagneticButton>
-              <p className="text-sm text-[#c5cae9] mt-4">Free forever · No credit card needed</p>
+              <p className="text-sm text-[#ffb3d0] mt-4">Free forever · No credit card needed</p>
             </motion.div>
           </div>
         </section>
       </main>
-      
+
       <Footer />
+      </div>
     </div>
   );
 };
