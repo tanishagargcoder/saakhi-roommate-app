@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Saakhi">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6a0a2a"/>
+      <stop offset="55%" stop-color="#c01450"/>
+      <stop offset="100%" stop-color="#ff2d6b"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="42%" r="52%">
+      <stop offset="0%" stop-color="#ffd36b" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#ff7ab0" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ff2d6b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#plate)"/>
+  <circle cx="256" cy="214" r="190" fill="url(#core)"/>
+  <text x="256" y="258" text-anchor="middle" dominant-baseline="central"
+        font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+        font-size="248" font-weight="700" fill="#ffffff">S</text>
+</svg>
