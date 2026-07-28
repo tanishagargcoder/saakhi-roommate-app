@@ -13,8 +13,8 @@ export default defineConfig({
         name: 'Saakhi - Find Your Perfect Roommate',
         short_name: 'Saakhi',
         description: "India's women-only roommate finder — safe, compatible matches with real-time chat.",
-        theme_color: '#3949ab',
-        background_color: '#283593',
+        theme_color: '#1a0418',
+        background_color: '#1a0418',
         display: 'standalone',
         start_url: '/',
         icons: [
