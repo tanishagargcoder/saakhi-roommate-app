@@ -49,7 +49,7 @@ const Landing = () => {
   const { scrollYProgress } = useScroll();
 
   // The storm owns the hero, then recedes so the rest of the page stays readable.
-  const stormOpacity = useTransform(scrollYProgress, [0, 0.14, 0.3], [1, 0.55, 0.18]);
+  const stormOpacity = useTransform(scrollYProgress, [0, 0.08, 0.18], [1, 0.35, 0.04]);
 
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden">
@@ -65,8 +65,19 @@ const Landing = () => {
         {/* Hero Section */}
         <section className="relative overflow-hidden w-full px-6 md:px-10 py-16 flex flex-col items-center min-h-[92vh] justify-center">
           <CursorGlow />
+          {/* Scrim so hero copy stays readable over the storm */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(20,3,18,0.88) 0%, rgba(20,3,18,0.72) 40%, rgba(20,3,18,0.25) 70%, transparent 100%)',
+            }}
+          />
 
-          <div className="relative z-10 text-center max-w-5xl mx-auto mb-12">
+          <div
+            className="relative z-10 text-center max-w-5xl mx-auto mb-12"
+            style={{ textShadow: '0 2px 18px rgba(10,1,9,0.95), 0 1px 4px rgba(10,1,9,0.9)' }}
+          >
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -218,7 +229,7 @@ const Landing = () => {
         </section>
 
         {/* Infinite marquee of what Saakhi does */}
-        <section className="py-5 bg-[#2a0620]/60 border-y border-white/10 overflow-hidden marquee-wrap">
+        <section className="py-5 bg-[#2a0620]/95 border-y border-white/10 overflow-hidden marquee-wrap">
           <div className="marquee-track gap-3">
             {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
               <span
@@ -232,7 +243,7 @@ const Landing = () => {
         </section>
 
         {/* KPI band — mirror hall + slipstream + cascade */}
-        <section className="py-20 px-6 md:px-10">
+        <section className="py-20 px-6 md:px-10 bg-[#150312]/95">
           <div className="w-full max-w-[1400px] mx-auto">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
               {[
@@ -273,7 +284,7 @@ const Landing = () => {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="relative py-16 bg-[#6a0a2a]/50 bg-dots scroll-mt-16 overflow-hidden">
+        <section id="features" className="relative py-20 bg-[#22061d]/95 scroll-mt-16 overflow-hidden">
           <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#ff2d6b]/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
@@ -330,7 +341,7 @@ const Landing = () => {
         </section>
         
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-16 scroll-mt-16">
+        <section id="how-it-works" className="py-20 scroll-mt-16 bg-[#150312]/95">
           <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">Process</span>
@@ -347,7 +358,7 @@ const Landing = () => {
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true, amount: 0 }}
                 transition={{ duration: 1.1, ease: 'easeInOut' }}
-                className="hidden md:block absolute top-0 left-[12%] right-[12%] h-0.5 origin-left bg-gradient-to-r from-[#ff2d6b] via-[#ffb3d0] to-[#ff2d6b]"
+                className="hidden md:block absolute top-6 left-[12%] right-[12%] h-0.5 origin-left bg-gradient-to-r from-[#ff2d6b] via-[#ffd36b] to-[#ff2d6b] opacity-70"
               />
               {[
                 {
@@ -378,9 +389,9 @@ const Landing = () => {
                   viewport={{ once: true, amount: 0, margin: '0px 0px -40px 0px' }}
                   transition={{ duration: 0.5, delay: 0.25 + index * 0.15, ease: 'easeOut' }}
                   whileHover={{ y: -8 }}
-                  className="sakhi-card shine-card glow-hover p-6 text-center relative"
+                  className="glass-card glow-hover px-6 pb-6 pt-10 text-center relative mt-6"
                 >
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                     <motion.div
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
@@ -406,7 +417,7 @@ const Landing = () => {
         </section>
         
         {/* About Section */}
-        <section id="about" className="relative py-16 bg-[#6a0a2a]/50 bg-dots scroll-mt-16 overflow-hidden">
+        <section id="about" className="relative py-20 bg-[#22061d]/95 scroll-mt-16 overflow-hidden">
           <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#ffb3d0]/15 rounded-full blur-3xl pointer-events-none"></div>
           <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div {...fadeUp} className="text-center mb-12">
@@ -452,7 +463,7 @@ const Landing = () => {
         </section>
         
         {/* FAQ Section */}
-        <section id="faq" className="py-16 scroll-mt-16">
+        <section id="faq" className="py-20 scroll-mt-16 bg-[#150312]/95">
           <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10 max-w-3xl">
             <motion.div {...fadeUp} className="text-center mb-12">
               <span className="inline-block px-4 py-1 bg-[#ff2d6b]/40 rounded-full text-[#ffb3d0] text-sm font-medium mb-4">FAQ</span>
@@ -503,7 +514,7 @@ const Landing = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16">
+        <section className="py-20 bg-[#150312]/95">
           <div className="w-full max-w-[1400px] mx-auto px-6 md:px-10">
             <motion.div
               {...fadeUp}

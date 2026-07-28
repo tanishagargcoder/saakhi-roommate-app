@@ -571,7 +571,7 @@ const styles = {
     marginBottom: '8px'
   },
   formSubtitle: {
-    color: '#718096',
+    color: '#7a4459',
     marginBottom: '30px',
     fontSize: '1rem'
   },
@@ -591,12 +591,14 @@ const styles = {
   input: {
     width: '100%',
     padding: '15px 20px',
-    border: '2px solid #ff2d6b',
+    border: '2px solid #ff7ab0',
     borderRadius: '12px',
     fontSize: '1rem',
     transition: 'all 0.3s ease',
     outline: 'none',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    color: '#3d0a26',
+    backgroundColor: '#fff'
   },
   forgotPassword: {
     textAlign: 'right',
@@ -663,7 +665,7 @@ const styles = {
   },
   termsText: {
     fontSize: '0.85rem',
-    color: '#718096',
+    color: '#7a4459',
     lineHeight: '1.5',
     margin: 0
   },
@@ -681,6 +683,16 @@ styleSheet.textContent = `
     to { transform: rotate(360deg); }
   }
   
+  input::placeholder {
+    color: #9b6b80 !important;
+    opacity: 1;
+  }
+
+  input:-webkit-autofill {
+    -webkit-text-fill-color: #3d0a26 !important;
+    box-shadow: 0 0 0 1000px #fff inset !important;
+  }
+
   input:focus {
     border-color: #6a0a2a !important;
     box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.1) !important;
