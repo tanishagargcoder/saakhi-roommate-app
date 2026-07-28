@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
@@ -48,6 +48,25 @@ const Landing = () => {
   const [openFaq, setOpenFaq] = useState(null);
   const { scrollYProgress } = useScroll();
 
+  // The storm gets the screen to itself first, then the page arrives.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+    const t = setTimeout(() => {
+      document.body.style.overflow = prev || '';
+    }, 2600);
+    // Guarantee the page is visible after the intro window, animations or not.
+    const ready = setTimeout(() => {
+      document.documentElement.classList.add('intro-ready');
+    }, 4000);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(ready);
+      document.body.style.overflow = prev || '';
+    };
+  }, []);
+
   // The storm owns the hero, then recedes so the rest of the page stays readable.
   const stormOpacity = useTransform(scrollYProgress, [0, 0.08, 0.18], [1, 0.35, 0.04]);
 
@@ -58,8 +77,20 @@ const Landing = () => {
         <StormBackground interactive />
       </motion.div>
       <div className="relative z-10">
-      <ScrollProgress />
-      <NavBar />
+      <div className="intro-nav">
+        <ScrollProgress />
+        <NavBar />
+      </div>
+
+      <div
+        className="intro-hint fixed bottom-6 left-1/2 -translate-x-1/2 z-20 text-sm text-[#ffb3d0] pointer-events-none flex flex-col items-center gap-1"
+      >
+        <span>scroll</span>
+        <motion.span
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        >↓</motion.span>
+      </div>
 
       <main>
         {/* Hero Section */}
@@ -81,7 +112,7 @@ const Landing = () => {
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 1.4 }}
+              transition={{ duration: 0.7, delay: 1.8 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/20 rounded-full text-[#ffe3ef] text-sm font-medium mb-6 backdrop-blur-sm"
             >
               <span className="w-2 h-2 rounded-full bg-[#ffd36b] pulse-dot"></span>
@@ -92,7 +123,7 @@ const Landing = () => {
             <motion.h1
               initial={{ opacity: 0, scale: 0.94, filter: 'blur(10px)' }}
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              transition={{ duration: 1.6, delay: 1.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.6, delay: 2.0, ease: [0.22, 1, 0.36, 1] }}
               className="text-5xl md:text-8xl font-bold text-white mb-3 leading-[1.05] tracking-tight"
             >
               <span className="text-gradient-animated">Saakhi</span>
@@ -101,7 +132,7 @@ const Landing = () => {
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.1, delay: 2.5, ease: 'easeOut' }}
+              transition={{ duration: 1.1, delay: 3.1, ease: 'easeOut' }}
               className="text-2xl md:text-4xl font-semibold text-[#ffe3ef] mb-6 tracking-wide"
             >
               Find Your Perfect Roommate
@@ -110,7 +141,7 @@ const Landing = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 3.0, duration: 0.9 }}
+              transition={{ delay: 3.7, duration: 0.9 }}
               className="text-xl text-[#ffe3ef] mb-2 max-w-2xl mx-auto"
             >
               Saakhi helps women find compatible roommates based on lifestyle preferences, making shared living safer and more harmonious.
@@ -119,7 +150,7 @@ const Landing = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 3.3, duration: 0.9 }}
+              transition={{ delay: 4.0, duration: 0.9 }}
               className="text-lg text-[#ffb3d0] mb-8"
             >
               Matched on{' '}
@@ -132,7 +163,7 @@ const Landing = () => {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 3.6, duration: 0.7 }}
+              transition={{ delay: 4.3, duration: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <MagneticButton
@@ -152,7 +183,7 @@ const Landing = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 3.9, duration: 0.8 }}
+              transition={{ delay: 4.6, duration: 0.8 }}
               className="flex flex-wrap justify-center gap-x-8 gap-y-2 mt-8 text-sm text-[#ffb3d0]"
             >
               <span>🛡️ Verified profiles</span>
@@ -164,7 +195,7 @@ const Landing = () => {
           <motion.div
             initial={{ opacity: 0, y: 40, rotateX: 12 }}
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 1.2, delay: 4.1, ease: 'easeOut' }}
+            transition={{ duration: 1.2, delay: 4.8, ease: 'easeOut' }}
             className="relative z-10 w-full max-w-4xl animate-float"
           >
             <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden shadow-2xl">
@@ -228,6 +259,7 @@ const Landing = () => {
           </motion.div>
         </section>
 
+        <div className="intro-body">
         {/* Infinite marquee of what Saakhi does */}
         <section className="py-5 bg-[#2a0620]/95 border-y border-white/10 overflow-hidden marquee-wrap">
           <div className="marquee-track gap-3">
@@ -295,44 +327,75 @@ const Landing = () => {
               </p>
             </motion.div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
               {[
                 {
-                  icon: "🛡️",
-                  title: "Safe Community",
-                  description: "Women-only community with verified profiles for your peace of mind."
+                  icon: '🛡️',
+                  title: 'Safe Community',
+                  description: 'A women-only space where every member signs in with a verified email — no strangers browsing your profile.',
+                  bullets: ['Women-only by design', 'Profiles hidden from the public', 'Report & block in one tap'],
+                  glow: '#ff2d6b',
                 },
                 {
-                  icon: "🤝",
-                  title: "Perfect Match",
-                  description: "Our algorithm matches you with compatible roommates based on your preferences."
+                  icon: '🤝',
+                  title: 'Perfect Match',
+                  description: 'Nine lifestyle questions turn into a compatibility score, so you see who actually fits before you talk.',
+                  bullets: ['Sleep, cleanliness & food match', 'Score explained line by line', 'Filter by city and budget'],
+                  glow: '#ffd36b',
                 },
                 {
-                  icon: "💬",
-                  title: "Easy Communication",
-                  description: "Connect and coordinate with potential roommates in real-time."
-                }
+                  icon: '💬',
+                  title: 'Easy Communication',
+                  description: 'Chat in real time, break the ice with prompts, and schedule a room visit without sharing your number.',
+                  bullets: ['Instant private chat', 'Icebreaker questions', 'Schedule room visits'],
+                  glow: '#ff7ab0',
+                },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
                   {...fadeUp}
                   transition={{ ...fadeUp.transition, delay: index * 0.12 }}
+                  className="h-full"
                 >
-                  <TiltCard className="sakhi-card shine-card glow-hover p-6 text-center h-full">
-                    <motion.div
-                      whileHover={{ rotate: [0, -12, 12, 0], scale: 1.12 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#6a0a2a] to-[#ff2d6b] flex items-center justify-center text-3xl mb-4 shadow-lg"
-                      style={{ transform: 'translateZ(40px)' }}
+                  <TiltCard className="feature-card glass-card p-7 h-full group relative overflow-hidden">
+                    {/* accent glow that blooms on hover */}
+                    <div
+                      className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-56 h-56 rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"
+                      style={{ background: feature.glow }}
+                    />
+
+                    <div className="relative" style={{ transform: 'translateZ(45px)' }}>
+                      <motion.div
+                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                        transition={{ duration: 0.55 }}
+                        className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-xl"
+                        style={{
+                          background: `linear-gradient(140deg, ${feature.glow}, #6a0a2a)`,
+                          boxShadow: `0 12px 32px -10px ${feature.glow}`,
+                        }}
+                      >
+                        {feature.icon}
+                      </motion.div>
+                    </div>
+
+                    <h3
+                      className="text-2xl font-semibold text-white mb-2"
+                      style={{ transform: 'translateZ(28px)' }}
                     >
-                      {feature.icon}
-                    </motion.div>
-                    <h3 className="text-xl font-semibold text-white mb-2" style={{ transform: 'translateZ(25px)' }}>
                       {feature.title}
                     </h3>
-                    <p className="text-[#ffe3ef]" style={{ transform: 'translateZ(15px)' }}>
+                    <p className="text-[#ffe3ef]/85 leading-relaxed mb-4" style={{ transform: 'translateZ(18px)' }}>
                       {feature.description}
                     </p>
+
+                    <ul className="space-y-2 pt-4 border-t border-white/10" style={{ transform: 'translateZ(12px)' }}>
+                      {feature.bullets.map((b) => (
+                        <li key={b} className="flex items-start gap-2 text-sm text-[#ffb3d0]">
+                          <span style={{ color: feature.glow }} className="mt-px">✦</span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </TiltCard>
                 </motion.div>
               ))}
@@ -534,6 +597,7 @@ const Landing = () => {
             </motion.div>
           </div>
         </section>
+        </div>
       </main>
 
       <Footer />

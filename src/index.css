@@ -204,6 +204,53 @@ body {
 .kpi-cascade:hover::before { transform: translate(6px, 6px) rotate(1.2deg); opacity: 0.8; }
 .kpi-cascade:hover::after { transform: translate(12px, 12px) rotate(2.4deg); opacity: 0.45; }
 
+/* ===== Intro choreography =====
+   The storm holds the screen alone, then the page arrives.
+   `backwards` fill means the hidden state only applies during the delay —
+   if animations never run, the content is simply visible. */
+@keyframes intro-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-rise { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+@keyframes intro-drop { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+
+.intro-nav { animation: intro-drop 0.7s ease-out 2.6s backwards; }
+.intro-body { animation: intro-rise 0.9s ease-out 2.8s backwards; }
+.intro-hint { animation: intro-fade 0.8s ease-out 3.4s backwards; }
+
+/* Safety net: once the intro window passes, force the content visible even if
+   the animations never ran (frozen/background tab, reduced motion, older engine). */
+.intro-ready .intro-nav,
+.intro-ready .intro-body,
+.intro-ready .intro-hint {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-nav, .intro-body, .intro-hint { animation: none; }
+}
+
+/* Feature card — animated gradient edge that lights up on hover */
+.feature-card { transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease; }
+.feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, rgba(255,45,107,0.7), rgba(255,211,107,0.55), rgba(255,122,176,0.7));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.feature-card:hover::after { opacity: 1; }
+.feature-card:hover {
+  box-shadow: 0 26px 60px -24px rgba(255, 45, 107, 0.65);
+}
+
 /* Glass card with a gradient hairline border */
 .glass-card {
   position: relative;
