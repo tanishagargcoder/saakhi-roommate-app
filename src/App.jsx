@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import VoiceAssistant from './components/voiceassistant';
+import { PwaPrompt } from './components';
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
           {/* Toast container for success/error messages */}
           <ToastContainer />
           <VoiceAssistant />
+          <PwaPrompt />
         </div>
       </BrowserRouter>
     </AuthProvider>

@@ -48,9 +48,10 @@ const VoiceAssistant = () => {
         justifyContent: 'center',
         color: '#fff',
         background: open
-          ? 'rgba(30, 41, 59, 0.95)'
-          : 'linear-gradient(135deg, #3949ab, #7986cb)',
-        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)',
+          ? 'rgba(42, 6, 32, 0.95)'
+          : 'linear-gradient(135deg, #ff2d6b, #6a0a2a)',
+        border: '1px solid rgba(255, 211, 107, 0.35)',
+        boxShadow: '0 8px 22px -6px rgba(255, 45, 107, 0.7)',
         transition: 'transform 0.2s ease, background 0.2s ease',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)'; }}
